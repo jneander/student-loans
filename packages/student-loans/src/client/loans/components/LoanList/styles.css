@@ -1,0 +1,9 @@
+:local(.LoanList) {
+  display: block;
+  list-style-type: none;
+  padding: 0;
+}
+
+:local(.LoanList__Loan) {
+  padding: var(--spacing-small) var(--spacing-medium);
+}
