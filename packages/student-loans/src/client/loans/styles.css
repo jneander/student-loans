@@ -1,0 +1,11 @@
+:local(.Content) {
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+
+:local(.Body) {
+  align-items: stretch;
+  display: flex;
+  flex-direction: row;
+  padding: var(--spacing-medium);
+}
