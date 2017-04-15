@@ -1,0 +1,49 @@
+{
+  "name": "@jneander/student-loans",
+  "engines": {
+    "node": ">=8.9.4"
+  },
+  "version": "0.0.1",
+  "description": "A tool for tracking and optimizing your student loans",
+  "main": "index.js",
+  "scripts": {
+    "build": "NODE_ENV=development build-app --config ./config/app.js",
+    "build:production": "NODE_ENV=production build-app --config ./config/app.js",
+    "build:watch": "NODE_ENV=development build-app --config ./config/app.js --watch",
+    "clean": "rimraf __build__",
+    "deploy": "node ./scripts/deploy.js",
+    "format": "format-code",
+    "lint": "lint-code",
+    "lint:fix": "lint-code --fix",
+    "start:watch": "NODE_ENV=development build-app --config ./config/app.js --watch --serve",
+    "test": "NODE_ENV=test run-specs --config config/specs.js",
+    "test:watch": "NODE_ENV=test run-specs --config config/specs.js --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jneander/jlnio"
+  },
+  "author": "Jeremy Neander",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jneander/jlnio/issues"
+  },
+  "homepage": "https://github.com/jneander/jlnio#readme",
+  "devDependencies": {
+    "@jneander/dev-tools": "^0.0.4"
+  },
+  "dependencies": {
+    "@instructure/ui-core": "^4.7.2",
+    "@instructure/ui-themes": "^4.7.2",
+    "@jneander/activity-routing": "^0.0.1",
+    "@jneander/activity-routing-history": "^0.0.1",
+    "firebase": "^4.0.0",
+    "normalize.css": "^8.0.0",
+    "prop-types": "^15.5.9",
+    "react": "^15.6.2",
+    "react-dom": "^15.6.2",
+    "react-redux": "^5.0.4",
+    "redux": "^3.6.0",
+    "redux-thunk": "^2.2.0"
+  }
+}
