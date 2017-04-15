@@ -1,0 +1,11 @@
+[
+  { "loanId": "101", "date": "Jan 1, 2007", "type": "Loan Created" },
+  { "loanId": "101", "date": "Feb 1, 2007", "type": "Payment" },
+  { "loanId": "101", "date": "Mar 1, 2007", "type": "Payment" },
+  { "loanId": "101", "date": "Apr 1, 2007", "type": "Payment" },
+  { "loanId": "101", "date": "May 1, 2007", "type": "Payment" },
+  { "loanId": "101", "date": "Jun 1, 2007", "type": "Payment" },
+  { "loanId": "101", "date": "Jul 1, 2007", "type": "Payment" },
+  { "loanId": "101", "date": "Aug 1, 2007", "type": "Payment" },
+  { "loanId": "101", "date": "Sep 1, 2007", "type": "Payment" }
+]

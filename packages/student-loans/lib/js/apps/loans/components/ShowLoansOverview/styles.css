@@ -1,0 +1,4 @@
+:local(.LoanInfo) {
+  background: var(--white);
+  padding: var(--spacing-medium);
+}
