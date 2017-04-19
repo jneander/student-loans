@@ -1,0 +1,8 @@
+body {
+  background: lightblue;
+}
+
+:local(.box) {
+  border: 1px solid black;
+  padding: 1rem;
+}
