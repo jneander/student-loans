@@ -7,11 +7,8 @@ process.env.NODE_ENV = 'production';
 
 var config = require('../config/webpack.js');
 
-config.plugins.push(new webpack.optimize.UglifyJsPlugin());
-config.plugins.push(new ExtractTextPlugin('styles/index-[contenthash:10].css'));
-
 config.module.loaders.push({
-  exclude: '/node_modules/',
+  exclude: path.join(__dirname, '..', 'node_modules'),
   loaders: ExtractTextPlugin.extract({
     use: {
       loader: 'css-loader?localIdentName=[hash:base64:10]'
@@ -20,6 +17,9 @@ config.module.loaders.push({
   test: /\.(css)$/
 });
 
-config.output.filename = 'js/bundle.[hash:12].min.js';
+config.output.filename = 'js/[name].[hash:12].min.js';
+
+config.plugins.push(new webpack.optimize.UglifyJsPlugin());
+config.plugins.push(new ExtractTextPlugin('styles/index-[contenthash:10].css'));
 
 module.exports = config;

@@ -9,20 +9,24 @@ var DEVELOPMENT = !PRODUCTION;
 module.exports = {
   devtool: 'source-map',
 
-  entry: [
-    path.join(__dirname, '..', 'lib/js/index.js')
-  ],
+  entry: {
+    index: [
+      'babel-polyfill',
+      path.join(__dirname, '..', 'lib/js/index.js')
+    ],
+    react: ['react', 'react-dom']
+  },
 
   module: {
     loaders: [{
-      exclude: '/node_modules/',
+      exclude: path.join(__dirname, '..', 'node_modules'),
       test: /\.js$/,
       use: {
         loader: 'babel-loader',
         options: {
           presets: [
             ['es2015', { modules: false }],
-            'stage-0'
+            'react'
           ]
         }
       }
@@ -34,7 +38,7 @@ module.exports = {
   },
 
   output: {
-    filename: 'js/bundle.js',
+    filename: 'js/[name].js',
     path: path.join(__dirname, '..', 'dist'),
     publicPath: '/'
   },
@@ -50,6 +54,11 @@ module.exports = {
   ],
 
   resolve: {
+    alias: {
+      react: path.resolve(__dirname, '../node_modules/react'),
+      React: path.resolve(__dirname, '../node_modules/react')
+    },
+
     modules: [
       path.join(__dirname, '..', 'lib'),
       'node_modules'
