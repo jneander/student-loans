@@ -7,8 +7,9 @@ var webpack = require('webpack');
 
 var config = require('../config/webpack.development.js');
 
-config.entry.devServer = 'webpack/hot/dev-server';
-config.entry.devServerClient = 'webpack-dev-server/client?http://localhost:8080/';
+config.entry.index.unshift('react-hot-loader/patch');
+config.entry.index.push('webpack/hot/dev-server');
+config.entry.index.push('webpack-dev-server/client?http://localhost:8080/');
 
 config.plugins.unshift(new webpack.HotModuleReplacementPlugin());
 

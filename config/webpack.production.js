@@ -7,13 +7,17 @@ process.env.NODE_ENV = 'production';
 
 var config = require('../config/webpack.js');
 
+config.bail = true;
+
 config.module.loaders.push({
   exclude: path.join(__dirname, '..', 'node_modules'),
+
   loaders: ExtractTextPlugin.extract({
     use: {
       loader: 'css-loader?localIdentName=[hash:base64:10]'
     }
   }),
+
   test: /\.(css)$/
 });
 
