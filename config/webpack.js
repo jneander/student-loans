@@ -27,6 +27,7 @@ module.exports = {
           plugins: ['react-hot-loader/babel'],
           presets: [
             ['es2015', { modules: false }],
+            'babel-preset-stage-1',
             'react'
           ]
         }
