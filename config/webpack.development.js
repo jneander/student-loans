@@ -1,7 +1,5 @@
 var webpack = require('webpack');
 
-process.env.NODE_ENV = 'development';
-
 var config = require('../config/webpack.js');
 
 config.module.loaders.push({
@@ -10,6 +8,11 @@ config.module.loaders.push({
   test: /\.(css)$/
 });
 
+config.plugins.unshift(new webpack.DefinePlugin({
+  'process.env': {
+    NODE_ENV: JSON.stringify('production')
+  }
+}));
 config.plugins.push(new webpack.NamedModulesPlugin());
 
 module.exports = config;

@@ -1,14 +1,20 @@
 {
   "name": "student-loans",
+  "engines": {
+    "node" : ">=6.9.5"
+  },
   "version": "0.0.0",
   "description": "A tool for tracking and optimizing your student loans",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf dist && webpack --config ./config/webpack.development.js --progress",
-    "build-production": "rimraf dist && webpack --config ./config/webpack.production.js --progress",
-    "build-stats": "webpack --config ./config/webpack.development.js --profile --json",
-    "build-watch": "webpack --config ./config/webpack.development.js --progress --watch",
-    "dev": "node scripts/dev-server.js"
+    "build": "webpack --config ./config/webpack.development.js --progress",
+    "build:production": "webpack --config ./config/webpack.production.js --progress",
+    "build:stats": "webpack --config ./config/webpack.development.js --profile --json",
+    "build:watch": "webpack --config ./config/webpack.development.js --progress --watch",
+    "clear": "rimraf dist",
+    "deploy": "npm run build-production",
+    "dev": "node scripts/dev-server.js",
+    "nuke": "rimraf node_modules"
   },
   "repository": {
     "type": "git",
