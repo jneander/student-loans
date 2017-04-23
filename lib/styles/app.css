@@ -1,0 +1,33 @@
+:local(.Header) {
+  background: #e4e3df;
+  padding: var(--spacing-medium);
+}
+
+:local(.Body) {
+  align-items: stretch;
+  display: flex;
+  flex-direction: row;
+  padding: var(--spacing-medium);
+}
+
+:local(.Sidebar) {
+  background: var(--white);
+  display: block;
+  flex-grow: 0;
+  flex-shrink: 0;
+  margin-right: var(--spacing-medium);
+  padding: var(--spacing-medium);
+  width: 16em;
+}
+
+:local(.Breadcrumbs) {
+  background: var(--white);
+  display: block;
+  margin-bottom: var(--spacing-medium);
+  padding: var(--spacing-medium);
+}
+
+:local(.Content) {
+  flex-grow: 1;
+  flex-shrink: 1;
+}
