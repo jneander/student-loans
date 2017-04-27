@@ -12,9 +12,17 @@ module.exports = {
   entry: {
     index: [
       'babel-polyfill',
-      path.join(__dirname, '..', 'lib/js/index.js')
+      path.join(__dirname, '..', 'lib/js/pages/index.js')
+    ],
+    signin: [
+      'babel-polyfill',
+      path.join(__dirname, '..', 'lib/js/pages/signin.js')
     ],
     react: ['react', 'react-dom']
+  },
+
+  externals: {
+    'google-api': 'gapi'
   },
 
   module: {
@@ -51,7 +59,14 @@ module.exports = {
       PRODUCTION: JSON.stringify(PRODUCTION)
     }),
     new HtmlWebpackPlugin({
+      chunks: ['index'],
+      filename: 'index.html',
       template: path.join(__dirname, '..', 'lib/markup/index.html')
+    }),
+    new HtmlWebpackPlugin({
+      chunks: ['signin'],
+      filename: 'signin.html',
+      template: path.join(__dirname, '..', 'lib/markup/signin.html')
     })
   ],
 
