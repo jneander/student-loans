@@ -12,11 +12,7 @@ module.exports = {
   entry: {
     index: [
       'babel-polyfill',
-      path.join(__dirname, '..', 'lib/js/pages/index.js')
-    ],
-    signin: [
-      'babel-polyfill',
-      path.join(__dirname, '..', 'lib/js/pages/signin.js')
+      path.join(__dirname, '..', 'lib/bundles/index.js')
     ],
     react: ['react', 'react-dom']
   },
@@ -62,11 +58,6 @@ module.exports = {
       chunks: ['index'],
       filename: 'index.html',
       template: path.join(__dirname, '..', 'lib/markup/index.html')
-    }),
-    new HtmlWebpackPlugin({
-      chunks: ['signin'],
-      filename: 'signin.html',
-      template: path.join(__dirname, '..', 'lib/markup/signin.html')
     })
   ],
 
