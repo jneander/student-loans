@@ -37,7 +37,10 @@ class Route {
   buildUrl (...args) {
     const pathValueMap = {};
     this.internals.urlPattern.names.forEach((name, index) => {
-      pathValueMap[name] = args[index];
+      pathValueMap[name] = args[index] || 'undefined';
+      if (!args[index]) {
+        console.warn(`no value given for ${name} in path ${this.internals.urlPattern.regex}`);
+      }
     });
     const pathString = this.internals.urlPattern.stringify(pathValueMap);
 

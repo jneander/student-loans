@@ -16,10 +16,6 @@ module.exports = {
     { react: ['react', 'react-dom'] }
   ),
 
-  externals: {
-    'google-api': 'gapi'
-  },
-
   module: {
     loaders: [{
       exclude: path.join(__dirname, '..', 'node_modules'),
