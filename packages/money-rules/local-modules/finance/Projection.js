@@ -93,6 +93,12 @@ function _projectAccounts(accounts, budget, startDate) {
   return payments;
 };
 
+function createDateKey (date) {
+  const month = `${date.getMonth() + 1}`.padStart(2, '0');
+  const day = `${date.getDate()}`.padStart(2, '0');
+  return `${date.getFullYear()}/${month}/${day}`;
+}
+
 export default class Projection {
   constructor (accounts, budget, startDate) {
     this.accounts = accounts;
@@ -101,10 +107,41 @@ export default class Projection {
   }
 
   run () {
-    if (this.payments) {
-      return this.payments;
-    } else {
-      this.payments = _projectAccounts(this.accounts, this.budget, this.startDate);
+    if (!this.payments) {
+      const payments = _projectAccounts(this.accounts, this.budget, this.startDate);
+      this.payments = payments;
+
+      const paymentsByDate = payments.reduce((map, payment) => {
+        const dateKey = createDateKey(payment.date);
+        map[dateKey] = map[dateKey] || [];
+        map[dateKey].push(payment);
+        return map;
+      }, {});
+
+      const accountKeys = this.accounts.map(account => account.key);
+      const dateKeys = Object.keys(paymentsByDate).sort();
+
+      const orderedPaymentDateMaps = dateKeys.map((dateKey) => {
+        const payments = paymentsByDate[dateKey];
+        const dateMap = {
+          date: payments[0].date
+        };
+
+        payments.forEach((payment) => {
+          dateMap[payment.key] = payment;
+        });
+
+        return dateMap;
+      });
+
+      this._timeline = orderedPaymentDateMaps;
     }
+  }
+
+  timeline () {
+    if (!this._timeline) {
+      return [];
+    }
+    return this._timeline;
   }
 }
