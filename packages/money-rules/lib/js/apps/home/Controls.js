@@ -28,18 +28,20 @@ class Controls extends React.Component {
   render () {
     return (
       <FormFieldGroup
-        description="Breakfast"
+        description="Plan Options"
         layout="stacked"
         rowSpacing="small"
       >
-        <Select inline label="Projection Type" onChange={this.onProjectionTypeChange}>
+        <Select
+          label="Projection Type"
+          onChange={this.onProjectionTypeChange}
+        >
           <option value="totalBalance">Total Balance</option>
           <option value="totalInterest">Total Interest</option>
         </Select>
 
         <TextInput
           defaultValue={`${this.props.budget}`}
-          inline
           label="Budget"
           onKeyDown={this.onBudgetKeyDown}
         />

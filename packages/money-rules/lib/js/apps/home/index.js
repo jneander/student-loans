@@ -31,24 +31,24 @@ export default class Home extends React.Component {
     return (
       <AppHarness page="home">
         <Provider store={this.store}>
-          <Grid>
-            <GridRow>
-              <GridCol>
-                <Container as="div" padding="medium">
-                  <Controls
-                    onProjectionTypeChange={this.onProjectionTypeChange}
-                    projectionType={this.state.projectionType}
-                  />
-                </Container>
-              </GridCol>
+          <Container as="div" padding="medium">
+            <Grid>
+              <GridRow>
+                <GridCol width="auto">
+                  <div style={{ width: '200px' }}>
+                    <Controls
+                      onProjectionTypeChange={this.onProjectionTypeChange}
+                      projectionType={this.state.projectionType}
+                    />
+                  </div>
+                </GridCol>
 
-              <GridCol>
-                <Container as="div" padding="medium">
+                <GridCol>
                   <Visualization projectionType={this.state.projectionType} />
-                </Container>
-              </GridCol>
-            </GridRow>
-          </Grid>
+                </GridCol>
+              </GridRow>
+            </Grid>
+          </Container>
         </Provider>
       </AppHarness>
     );
