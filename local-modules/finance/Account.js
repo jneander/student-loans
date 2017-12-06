@@ -3,12 +3,23 @@ import { floatToDollars } from 'units/Dollars';
 
 export default class Account {
   constructor (attr) {
-    this.key = attr.key;
-    this.principal = attr.principal;
     this.apr = attr.apr;
-    this.minimum = attr.minimum;
-    this.interest = attr.interest || 0.0;
     this.date = new Day(attr.date);
+    this.interest = attr.interest || 0.0;
+    this.key = attr.key;
+    this.minimum = attr.minimum;
+    this.principal = attr.principal;
+  }
+
+  clone () {
+    return new Account({
+      apr: this.apr,
+      date: this.date.date(),
+      interest: this.interest,
+      key: this.key,
+      minimum: this.minimum,
+      principal: this.principal
+    });
   }
 
   getPrincipal () {

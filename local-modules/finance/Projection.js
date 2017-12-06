@@ -1,5 +1,7 @@
 import { daysBetween, nextMonth, today } from 'units/Dates';
 
+import Account from './Account';
+
 function _haveRemainingPrincipal(accounts) {
   return accounts.some(function(account) {
     return account.getCurrentPrincipal() > 0;
@@ -77,7 +79,7 @@ function _updatePeriod(period) {
 function _projectAccounts(accounts, budget, startDate) {
   var limit = 240;
   var payments = [];
-  var period = {start: startDate || today(), end: startDate || today()};
+  var period = { start: startDate || today(), end: startDate || today() };
 
   while (_haveRemainingPrincipal(accounts) && limit-- > 0) {
     var _payments = _createBlankPayments(accounts);
@@ -108,7 +110,8 @@ export default class Projection {
 
   run () {
     if (!this.payments) {
-      const payments = _projectAccounts(this.accounts, this.budget, this.startDate);
+      const accounts = this.accounts.map(account => account.clone());
+      const payments = _projectAccounts(accounts, this.budget, this.startDate);
       this.payments = payments;
 
       const paymentsByDate = payments.reduce((map, payment) => {

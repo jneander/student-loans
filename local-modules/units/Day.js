@@ -10,6 +10,10 @@ export default class Day {
     this._date = date;
   }
 
+  date () {
+    return this._date;
+  }
+
   year () {
     return this._year;
   }
