@@ -61,6 +61,7 @@
   },
   "dependencies": {
     "history": "^4.7.2",
+    "lodash": "^4.17.4",
     "normalize.css": "^7.0.0",
     "qs": "^6.5.1",
     "react": "^15.6.1",
