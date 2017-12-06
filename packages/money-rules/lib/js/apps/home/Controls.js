@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import FormFieldGroup from 'instructure-ui/lib/components/FormFieldGroup';
-import Select from 'instructure-ui/lib/components/Select';
-import TextInput from 'instructure-ui/lib/components/TextInput';
+import FormFieldGroup from '@instructure/ui-core/lib/components/FormFieldGroup';
+import Select from '@instructure/ui-core/lib/components/Select';
+import TextInput from '@instructure/ui-core/lib/components/TextInput';
 
 import { getBudget } from 'js/shared/plans/PlanAccessor';
 import { updateBudget } from 'js/shared/plans/PlanActions';
