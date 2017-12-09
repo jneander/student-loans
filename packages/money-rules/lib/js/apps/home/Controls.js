@@ -1,12 +1,18 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import DateInput from '@instructure/ui-core/lib/components/DateInput';
 import FormFieldGroup from '@instructure/ui-core/lib/components/FormFieldGroup';
-import Select from '@instructure/ui-core/lib/components/Select';
 import NumberInput from '@instructure/ui-core/lib/components/NumberInput';
+import Select from '@instructure/ui-core/lib/components/Select';
+
+import Day from 'units/Day';
 
 import { listAccounts } from 'js/shared/accounts/AccountAccessor';
 import { getBudget } from 'js/shared/plans/PlanAccessor';
 import { updateBudget } from 'js/shared/plans/PlanActions';
+
+import { getSelectedEndDate, getSelectedStartDate } from './app-state/AppStateAccessor';
+import { setSelectedEndDate, setSelectedStartDate } from './app-state/AppStateActions';
 
 class Controls extends React.Component {
   constructor (props) {
@@ -40,6 +46,18 @@ class Controls extends React.Component {
         this.maybeUpdateBudget(value);
       }
     };
+
+    this.handleEndDateChange = (_event, dateValue, _rawValue, invalidValue) => {
+      if (!invalidValue) {
+        this.props.setSelectedEndDate(new Day(dateValue));
+      }
+    }
+
+    this.handleStartDateChange = (_event, dateValue, _rawValue, invalidValue) => {
+      if (!invalidValue) {
+        this.props.setSelectedStartDate(new Day(dateValue));
+      }
+    }
 
     this.state = {
       budget: this.props.budget,
@@ -76,6 +94,22 @@ class Controls extends React.Component {
           onKeyDown={this.onBudgetKeyDown}
           step="10"
         />
+
+        <DateInput
+          dateValue={this.props.startDate.date()}
+          label="Start Date"
+          nextLabel="Next Month"
+          onDateChange={this.handleStartDateChange}
+          previousLabel="Previous Month"
+        />
+
+        <DateInput
+          dateValue={this.props.endDate.date()}
+          label="End Date"
+          nextLabel="Next Month"
+          onDateChange={this.handleEndDateChange}
+          previousLabel="Previous Month"
+        />
       </FormFieldGroup>
     );
   }
@@ -84,12 +118,20 @@ class Controls extends React.Component {
 function mapStateToProps (state, ownProps) {
   return {
     accounts: listAccounts(state),
-    budget: getBudget(state)
+    budget: getBudget(state),
+    endDate: getSelectedEndDate(state),
+    startDate: getSelectedStartDate(state)
   };
 }
 
 function mapDispatchToProps (dispatch, ownProps) {
   return {
+    setSelectedEndDate (date) {
+      dispatch(setSelectedEndDate(date));
+    },
+    setSelectedStartDate (date) {
+      dispatch(setSelectedStartDate(date));
+    },
     updateBudget (budget) {
       dispatch(updateBudget(budget));
     }

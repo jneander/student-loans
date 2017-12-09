@@ -17,7 +17,7 @@ export function projectPlan () {
     const budget = getBudget(state);
     const startDate = getStartDate(state);
 
-    const projection = new Projection(accounts, budget, startDate);
+    const projection = new Projection({ accounts, budget, startDate });
     projection.run();
 
     dispatch({

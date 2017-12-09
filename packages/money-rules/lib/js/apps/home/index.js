@@ -10,6 +10,7 @@ import AppHarness from 'js/shared/components/AppHarness';
 
 import Controls from './Controls';
 import Visualization from './Visualization';
+import * as Actions from './Actions';
 import * as Store from './Store';
 
 export default class Home extends React.Component {
@@ -25,6 +26,10 @@ export default class Home extends React.Component {
     this.onProjectionTypeChange = (projectionType) => {
       this.setState({ projectionType });
     };
+  }
+
+  componentDidMount () {
+    this.store.dispatch(Actions.initialize());
   }
 
   render () {

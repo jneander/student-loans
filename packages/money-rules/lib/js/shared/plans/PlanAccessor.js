@@ -2,10 +2,6 @@ import { Projection } from 'finance';
 import { thisMonth } from 'units/Dates';
 
 import accounts from 'js/apps/home/accounts';
-const projection = new Projection(accounts, 1300, thisMonth());
-projection.run();
-
-//
 
 import { set } from 'redux-helpers/AccessorHelper';
 
@@ -13,7 +9,7 @@ export function getInitialState () {
   return {
     plan: {
       budget: 1300, // TODO: start at 0
-      projection,
+      projection: null,
       startDate: thisMonth()
     }
   };
