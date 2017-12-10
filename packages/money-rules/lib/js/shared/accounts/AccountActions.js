@@ -1,11 +1,16 @@
-import { createConstants } from 'redux-helpers/ActionHelper';
+import Account from 'finance/lib/Account';
 
-const Constants = createConstants([
-  'ADD_ACCOUNTS'
-]);
+import { accountData } from 'js/apps/home/data';
 
-export { Constants };
+export const ADD_ACCOUNTS = 'ADD_ACCOUNTS';
 
-export function addAccounts (accountList) {
-  // …
+export function initialize () {
+  return function (dispatch, getState) {
+    const accounts = accountData.map(accountDatum => new Account(accountDatum));
+    dispatch(addAccounts(accounts));
+  }
+}
+
+export function addAccounts (accounts) {
+  return { type: ADD_ACCOUNTS, payload: { accounts } };
 }

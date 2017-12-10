@@ -55,9 +55,9 @@ export const accountData = [
     monthlyDueDate: 1,
     monthlyPaymentDate: 1,
     name: 'Earnest Consolidation Loan',
-    originalPrincipal: 7446.02,
+    originalPrincipal: 95539.12,
     originationDate: '2027/11/14',
-    payoffDate: '2015/10/20
+    payoffDate: '2015/10/20'
   }
 ];
 

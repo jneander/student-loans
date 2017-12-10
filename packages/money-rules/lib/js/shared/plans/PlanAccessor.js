@@ -1,8 +1,6 @@
 import { Projection } from 'finance';
 import { thisMonth } from 'units/Dates';
 
-import accounts from 'js/apps/home/accounts';
-
 import { set } from 'redux-helpers/AccessorHelper';
 
 export function getInitialState () {

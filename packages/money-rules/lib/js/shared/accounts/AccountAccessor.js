@@ -1,18 +1,17 @@
 import { merge, get, set } from 'redux-helpers/AccessorHelper';
-import accounts from 'js/apps/home/accounts';
 
 export function getInitialState () {
   return {
     accounts: {
-      map: accounts.reduce((map, account) => ({ ...map, [account.key]: account }), {}),
-      order: accounts.map(account => account.key)
+      cachedList: [],
+      map: {},
+      order: []
     }
   };
 }
 
 export function listAccounts (state) {
-  // return accounts;
-  return state.accounts.order.map(accountKey => state.accounts.map[accountKey]);
+  return state.accounts.cachedList;
 }
 
 export function addAccounts (state, accounts) {
@@ -26,5 +25,7 @@ export function addAccounts (state, accounts) {
     }
   });
 
-  return set(state, 'accounts', { map, order });
+  const cachedList = order.map(accountKey => map[accountKey]);
+
+  return set(state, 'accounts', { cachedList, map, order });
 }

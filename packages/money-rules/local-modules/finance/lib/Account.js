@@ -1,14 +1,15 @@
 import { Day } from 'units';
 import { floatToDollars } from 'units/Dollars';
 
+// TODO: separate state from account
 export default class Account {
   constructor (attr) {
     this.apr = attr.apr;
-    this.date = new Day(attr.date);
+    this.date = attr.date != null ? new Day(attr.date) : Day.today();
     this.interest = attr.interest || 0.0;
     this.key = attr.key;
     this.minimum = attr.minimum;
-    this.principal = attr.principal;
+    this.principal = attr.principal != null ? attr.principal : attr.originalPrincipal;
   }
 
   clone () {

@@ -9,6 +9,12 @@ export function setBudget (budget) {
   return { type: SET_BUDGET, payload: { budget } };
 }
 
+export function initialize () {
+  return function (dispatch, getState) {
+    // nothing here yet
+  }
+}
+
 export function projectPlan () {
   return function (dispatch, getState) {
     const state = getState();
