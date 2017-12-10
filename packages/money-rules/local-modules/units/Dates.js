@@ -18,7 +18,7 @@ export function today () {
 
 export function thisMonth () {
   const today = new Date();
-  new Day(new Date(today.getFullYear(), today.getMonth(), 1));
+  return new Day(new Date(today.getFullYear(), today.getMonth(), 1));
 }
 
 export function nextMonth (date = thisMonth()) {
