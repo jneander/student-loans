@@ -1,4 +1,5 @@
 import { MS_PER_DAY } from './Constants';
+import Day from './Day';
 
 export function daysBetween (date1, date2) {
   return Math.round(Math.abs(date1 - date2) / MS_PER_DAY);
@@ -17,7 +18,7 @@ export function today () {
 
 export function thisMonth () {
   const today = new Date();
-  return new Date(today.getFullYear(), today.getMonth(), 1);
+  new Day(new Date(today.getFullYear(), today.getMonth(), 1));
 }
 
 export function nextMonth (date = thisMonth()) {
@@ -26,4 +27,16 @@ export function nextMonth (date = thisMonth()) {
 
 export function equal (date1, date2) {
   return !(date1 < date2 || date1 > date2);
+}
+
+export function range (startDate, endDate) {
+  const range = [];
+
+  let currentDate = startDate;
+  while (currentDate.isOnOrBefore(endDate)) {
+    range.push(currentDate);
+    currentDate = currentDate.offset({ days: 1 });
+  }
+
+  return range;
 }

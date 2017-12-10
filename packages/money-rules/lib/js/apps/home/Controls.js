@@ -11,8 +11,8 @@ import { listAccounts } from 'js/shared/accounts/AccountAccessor';
 import { getBudget } from 'js/shared/plans/PlanAccessor';
 import { updateBudget } from 'js/shared/plans/PlanActions';
 
-import { getSelectedEndDate, getSelectedStartDate } from './app-state/AppStateAccessor';
-import { setSelectedEndDate, setSelectedStartDate } from './app-state/AppStateActions';
+import { getProjectionType, getSelectedEndDate, getSelectedStartDate } from './app-state/AppStateAccessor';
+import { setProjectionType, setSelectedEndDate, setSelectedStartDate } from './app-state/AppStateActions';
 
 class Controls extends React.Component {
   constructor (props) {
@@ -38,7 +38,7 @@ class Controls extends React.Component {
     };
 
     this.onProjectionTypeChange = (event) => {
-      this.props.onProjectionTypeChange(event.target.value);
+      this.props.setProjectionType(event.target.value);
     };
 
     this.onBudgetChange = (event, value) => {
@@ -120,12 +120,16 @@ function mapStateToProps (state, ownProps) {
     accounts: listAccounts(state),
     budget: getBudget(state),
     endDate: getSelectedEndDate(state),
+    projectionType: getProjectionType(state),
     startDate: getSelectedStartDate(state)
   };
 }
 
 function mapDispatchToProps (dispatch, ownProps) {
   return {
+    setProjectionType (projectionType) {
+      dispatch(setProjectionType(projectionType));
+    },
     setSelectedEndDate (date) {
       dispatch(setSelectedEndDate(date));
     },

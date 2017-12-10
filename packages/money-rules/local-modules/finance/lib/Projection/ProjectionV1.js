@@ -1,6 +1,8 @@
-import { daysBetween, nextMonth, today } from 'units/Dates';
+import Day from 'units/Day';
+import { daysBetween, nextMonth, range, today } from 'units/Dates';
 
 import Account from 'finance/lib/Account';
+import { ChangeTypes } from 'finance/lib/Projection/Constants';
 
 function _haveRemainingPrincipal(accounts) {
   return accounts.some(function(account) {
@@ -27,7 +29,14 @@ function _applyInterest(accounts, days) {
 
 function _createBlankPayments(accounts) {
   return accounts.map(function(account) {
-    return {key: account.key, principal: 0, interest: 0, total: 0};
+    return {
+      accountKey: account.key,
+      interest: 0,
+      key: account.key, // replace with accountKey
+      principal: 0,
+      total: 0,
+      type: ChangeTypes.PAYMENT
+    };
   });
 };
 
@@ -76,30 +85,33 @@ function _updatePeriod(period) {
   period.end = nextMonth(period.end);
 };
 
-function _projectAccounts(accounts, budget, startDate) {
+function _projectAccounts(accounts, budget, _startDate) {
+  const startDate = new Day(_startDate || today()).date();
+
   var limit = 240;
-  var payments = [];
-  var period = { start: startDate || today(), end: startDate || today() };
+  var period = { start: startDate, end: startDate };
+
+  const projectionDates = [];
 
   while (_haveRemainingPrincipal(accounts) && limit-- > 0) {
+    const accountStates = {};
+    const changes = [];
+
     var _payments = _createBlankPayments(accounts);
     _applyMinimumPayments(accounts, _payments, budget);
     var remainingBudget = _getRemainingBudget(budget, _payments);
     _applyBonusPayments(accounts, _payments, remainingBudget);
     _applyInterest(accounts, daysBetween(period.start, period.end));
     _finalizePayments(_payments, period.end);
-    _addNonzeroPayments(payments, _payments);
+    _addNonzeroPayments(changes, _payments);
+
+    projectionDates.push({ accountStates, changes });
+
     _updatePeriod(period);
   }
 
-  return payments;
+  return projectionDates;
 };
-
-function createDateKey (date) {
-  const month = `${date.getMonth() + 1}`.padStart(2, '0');
-  const day = `${date.getDate()}`.padStart(2, '0');
-  return `${date.getFullYear()}/${month}/${day}`;
-}
 
 export default class Projection {
   constructor (options) {
@@ -107,42 +119,39 @@ export default class Projection {
   }
 
   run () {
-    if (!this.payments) {
+    if (!this._timeline) {
       const accounts = this.options.accounts.map(account => account.clone());
-      const payments = _projectAccounts(accounts, this.options.budget, this.options.startDate);
-      this.payments = payments;
+      const projectionDates = _projectAccounts(accounts, this.options.budget, this.options.startDate);
 
-      const paymentsByDate = payments.reduce((map, payment) => {
-        const dateKey = createDateKey(payment.date);
-        map[dateKey] = map[dateKey] || [];
-        map[dateKey].push(payment);
-        return map;
-      }, {});
+      const dateKeyToDateMap = {};
+      const accountStatesByDate = {};
+      const changesByDate = {};
 
-      const accountKeys = this.options.accounts.map(account => account.key);
-      const dateKeys = Object.keys(paymentsByDate).sort();
+      projectionDates.forEach((projectionDate) => {
+        projectionDate.changes.forEach((change) => {
+          const date = new Day(change.date);
+          const dateKey = date.toString();
+          dateKeyToDateMap[dateKey] = date;
 
-      const orderedPaymentDateMaps = dateKeys.map((dateKey) => {
-        const payments = paymentsByDate[dateKey];
-        const dateMap = {
-          date: payments[0].date
-        };
-
-        payments.forEach((payment) => {
-          dateMap[payment.key] = payment;
+          changesByDate[dateKey] = changesByDate[dateKey] || [];
+          changesByDate[dateKey].push(change);
         });
 
-        return dateMap;
+        // projectionDate.accountStates.forEach((accountState) => {
+
+        // });
       });
 
-      this._timeline = orderedPaymentDateMaps;
-    }
-  }
+      const dateKeys = Object.keys(changesByDate).sort();
+      const startDate = dateKeyToDateMap[dateKeys[0]];
+      const endDate = dateKeyToDateMap[dateKeys[dateKeys.length - 1]];
 
-  timeline () {
-    if (!this._timeline) {
-      return [];
+      const dateRange = range(startDate, endDate);
+
+      this._timeline = dateRange.map((date) => {
+        const changes = changesByDate[date.toString()] || [];
+        return { date, changes };
+      });
     }
-    return this._timeline;
   }
 }

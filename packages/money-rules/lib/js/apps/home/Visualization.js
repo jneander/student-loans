@@ -5,7 +5,7 @@ import { Chart } from 'react-google-charts';
 import { listAccounts } from 'js/shared/accounts/AccountAccessor';
 import { getProjection } from 'js/shared/plans/PlanAccessor';
 
-import { getSelectedEndDate, getSelectedStartDate } from './app-state/AppStateAccessor';
+import { getProjectionType, getSelectedEndDate, getSelectedStartDate } from './app-state/AppStateAccessor';
 import VisualizationModel from './models/Visualization';
 
 function buildState (props) {
@@ -59,6 +59,7 @@ function mapStateToProps (state, ownProps) {
   return {
     accounts: listAccounts(state),
     projection: getProjection(state),
+    projectionType: getProjectionType(state),
     selectedEndDate: getSelectedEndDate(state),
     selectedStartDate: getSelectedStartDate(state)
   };

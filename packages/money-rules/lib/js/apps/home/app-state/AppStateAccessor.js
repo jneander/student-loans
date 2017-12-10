@@ -5,10 +5,19 @@ import { set } from 'redux-helpers/AccessorHelper';
 export function getInitialState () {
   return {
     appState: {
-      selectedEndDate: Day.today().offset({ years: 1 }),
-      selectedStartDate: Day.today()
+      projectionType: 'totalBalance',
+      selectedEndDate: Day.today().offset({ years: 10 }),
+      selectedStartDate: Day.today().offset({ years: -1 })
     }
   };
+}
+
+export function setProjectionType (state, projectionType) {
+  return set(state, 'appState.projectionType', projectionType);
+}
+
+export function getProjectionType (state) {
+  return state.appState.projectionType;
 }
 
 export function setSelectedEndDate (state, date) {

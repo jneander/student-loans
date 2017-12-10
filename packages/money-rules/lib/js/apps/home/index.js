@@ -20,14 +20,6 @@ export default class Home extends React.Component {
 
     this.store = Store.create();
     this.eventMachine = new EventMachine(this.store);
-
-    this.state = {
-      projectionType: 'totalBalance'
-    };
-
-    this.onProjectionTypeChange = (projectionType) => {
-      this.setState({ projectionType });
-    };
   }
 
   componentDidMount () {
@@ -44,15 +36,12 @@ export default class Home extends React.Component {
               <GridRow>
                 <GridCol width="auto">
                   <div style={{ width: '200px' }}>
-                    <Controls
-                      onProjectionTypeChange={this.onProjectionTypeChange}
-                      projectionType={this.state.projectionType}
-                    />
+                    <Controls />
                   </div>
                 </GridCol>
 
                 <GridCol>
-                  <Visualization projectionType={this.state.projectionType} />
+                  <Visualization />
                 </GridCol>
               </GridRow>
             </Grid>
