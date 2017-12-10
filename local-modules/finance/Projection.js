@@ -18,9 +18,7 @@ export default class Projection {
     this._timelineData = {};
 
     const projectionDates = this.projection.projectionDates;
-    const startDate = projectionDates[0];
-    const endDate = projectionDates[projectionDates.length - 1];
-    const dateRange = range(startDate, endDate);
+    const dateRange = range(this.projection.startDate, this.projection.endDate);
 
     dateRange.forEach((date) => {
       const projectionDatum = this.projection.projectionsByDate[date.toString()] || {};
