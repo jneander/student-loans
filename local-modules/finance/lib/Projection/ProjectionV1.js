@@ -86,12 +86,10 @@ function _updatePeriod(period) {
 };
 
 function projectAccounts (accounts, budget, _startDate) {
-  const startDate = new Day(_startDate || today()).date();
+  let startDate = new Day(_startDate || today()).date();
 
   var limit = 240;
   var period = { start: startDate, end: startDate };
-
-  const projectionDates = [];
 
   while (_haveRemainingPrincipal(accounts) && limit-- > 0) {
     const accountStates = {};
@@ -116,12 +114,11 @@ function projectAccounts (accounts, budget, _startDate) {
     _addNonzeroPayments(changes, payments);
 
     const date = new Day(paymentDate);
-    projectionDates.push({ date, accountStates, changes });
+    this.projectionDates.push(date);
+    this.projectionsByDate[date.toString()] = { date, accountStates, changes };
 
     _updatePeriod(period);
   }
-
-  return projectionDates;
 };
 
 export default class Projection {
@@ -132,36 +129,13 @@ export default class Projection {
   run () {
     if (!this._timeline) {
       const accounts = this.options.accounts.map(account => account.clone());
-      const projectionDates = projectAccounts(accounts, this.options.budget, this.options.startDate);
+      this.projectionsByDate = {};
+      this.projectionDates = [];
 
-      const dateKeyToDateMap = {};
-      const accountStatesByDate = {};
-      const changesByDate = {};
+      projectAccounts.call(this, accounts, this.options.budget, this.options.startDate);
 
-      projectionDates.forEach((projectionDate) => {
-        projectionDate.changes.forEach((change) => {
-          const date = new Day(change.date);
-          const dateKey = date.toString();
-          dateKeyToDateMap[dateKey] = date;
-
-          changesByDate[dateKey] = changesByDate[dateKey] || [];
-          changesByDate[dateKey].push(change);
-        });
-
-        accountStatesByDate[projectionDate.date.toString()] = projectionDate.accountStates;
-      });
-
-      const dateKeys = Object.keys(changesByDate).sort();
-      const startDate = dateKeyToDateMap[dateKeys[0]];
-      const endDate = dateKeyToDateMap[dateKeys[dateKeys.length - 1]];
-
-      const dateRange = range(startDate, endDate);
-
-      this._timeline = dateRange.map((date) => {
-        const changes = changesByDate[date.toString()] || [];
-        const accountStates = accountStatesByDate[date.toString()];
-        return { date, accountStates, changes };
-      });
+      this.startDate = this.projectionDates[0];
+      this.endDate = this.projectionDates[this.projectionDates.length - 1];
     }
   }
 }
