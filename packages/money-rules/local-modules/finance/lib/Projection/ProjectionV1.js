@@ -129,13 +129,11 @@ export default class Projection {
   run () {
     if (!this._timeline) {
       const accounts = this.options.accounts.map(account => account.clone());
+
       this.projectionsByDate = {};
       this.projectionDates = [];
 
       projectAccounts.call(this, accounts, this.options.budget, this.options.startDate);
-
-      this.startDate = this.projectionDates[0];
-      this.endDate = this.projectionDates[this.projectionDates.length - 1];
     }
   }
 }

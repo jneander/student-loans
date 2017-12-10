@@ -37,7 +37,6 @@ export default class Visualization {
           return accountState.balance;
         });
 
-        // const eventMap = events.reduce((map, event) => ({ ...map, [event.key]: event.balance }), {});
         rows.push([
           currentDate.date(),
           ...accountColumns
