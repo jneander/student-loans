@@ -2,6 +2,7 @@ export default class ProjectionState {
   constructor (date, stateData = {}) {
     this.date = date; // day
     this.stateData = {
+      accountStates: {},
       changes: [],
       ...stateData
     };
@@ -12,7 +13,7 @@ export default class ProjectionState {
   }
 
   getAccountState (accountKey) {
-
+    return this.stateData.accountStates[accountKey];
   }
 
   getTotalBalance () {

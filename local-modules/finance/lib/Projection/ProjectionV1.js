@@ -85,7 +85,7 @@ function _updatePeriod(period) {
   period.end = nextMonth(period.end);
 };
 
-function _projectAccounts(accounts, budget, _startDate) {
+function projectAccounts (accounts, budget, _startDate) {
   const startDate = new Day(_startDate || today()).date();
 
   var limit = 240;
@@ -97,15 +97,26 @@ function _projectAccounts(accounts, budget, _startDate) {
     const accountStates = {};
     const changes = [];
 
-    var _payments = _createBlankPayments(accounts);
-    _applyMinimumPayments(accounts, _payments, budget);
-    var remainingBudget = _getRemainingBudget(budget, _payments);
-    _applyBonusPayments(accounts, _payments, remainingBudget);
-    _applyInterest(accounts, daysBetween(period.start, period.end));
-    _finalizePayments(_payments, period.end);
-    _addNonzeroPayments(changes, _payments);
+    var payments = _createBlankPayments(accounts);
+    _applyMinimumPayments(accounts, payments, budget);
+    var remainingBudget = _getRemainingBudget(budget, payments);
+    _applyBonusPayments(accounts, payments, remainingBudget);
 
-    projectionDates.push({ accountStates, changes });
+    // get state of accounts at start of period
+    for (let i = 0; i < accounts.length; i++) {
+      accountStates[accounts[i].key] = {
+        balance: accounts[i].getCurrentPrincipal()
+      }
+    }
+
+    const paymentDate = period.end;
+
+    _applyInterest(accounts, daysBetween(period.start, period.end));
+    _finalizePayments(payments, paymentDate); // TODO: should this be the period start?
+    _addNonzeroPayments(changes, payments);
+
+    const date = new Day(paymentDate);
+    projectionDates.push({ date, accountStates, changes });
 
     _updatePeriod(period);
   }
@@ -121,7 +132,7 @@ export default class Projection {
   run () {
     if (!this._timeline) {
       const accounts = this.options.accounts.map(account => account.clone());
-      const projectionDates = _projectAccounts(accounts, this.options.budget, this.options.startDate);
+      const projectionDates = projectAccounts(accounts, this.options.budget, this.options.startDate);
 
       const dateKeyToDateMap = {};
       const accountStatesByDate = {};
@@ -137,9 +148,7 @@ export default class Projection {
           changesByDate[dateKey].push(change);
         });
 
-        // projectionDate.accountStates.forEach((accountState) => {
-
-        // });
+        accountStatesByDate[projectionDate.date.toString()] = projectionDate.accountStates;
       });
 
       const dateKeys = Object.keys(changesByDate).sort();
@@ -150,7 +159,8 @@ export default class Projection {
 
       this._timeline = dateRange.map((date) => {
         const changes = changesByDate[date.toString()] || [];
-        return { date, changes };
+        const accountStates = accountStatesByDate[date.toString()];
+        return { date, accountStates, changes };
       });
     }
   }
