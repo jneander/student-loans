@@ -1,6 +1,7 @@
 import Day from 'units/Day';
 import { daysBetween, nextMonth, range, today } from 'units/Dates';
 import { floatToDollars } from 'units/Dollars';
+import BoundedLoop from 'utils/lib/BoundedLoop';
 
 import Account from 'finance/lib/Account';
 import { ChangeTypes } from 'finance/lib/Projection/Constants';
@@ -103,7 +104,15 @@ export default class Projection {
       let limit = 240;
       const period = { start: this.startDate.date(), end: this.startDate.date() };
 
-      while (_haveRemainingPrincipal(accounts) && limit-- > 0) {
+      let boundedLoop;
+
+      const loopFn = () => {
+        if (!_haveRemainingPrincipal(accounts) || limit-- <= 0) {
+          boundedLoop.stop();
+          this.options.onFinish();
+          return;
+        }
+
         const accountStates = {};
         const changes = [];
 
@@ -131,7 +140,10 @@ export default class Projection {
         this.endDate = date;
 
         _updatePeriod(period);
-      }
+      };
+
+      boundedLoop = new BoundedLoop({ loopFn });
+      boundedLoop.start();
     }
   }
 }

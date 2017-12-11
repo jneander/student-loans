@@ -23,13 +23,23 @@ export function projectPlan () {
     const budget = getBudget(state);
     const startDate = getStartDate(state);
 
-    const projection = new Projection({ accounts, budget, startDate });
-    projection.run();
+    let projection;
 
-    dispatch({
-      type: SET_PROJECTION,
-      payload: { projection }
+    const onFinish = () => {
+      dispatch({
+        type: SET_PROJECTION,
+        payload: { projection }
+      });
+    };
+
+    projection = new Projection({
+      accounts,
+      budget,
+      onFinish,
+      startDate
     });
+
+    projection.run();
   }
 }
 
