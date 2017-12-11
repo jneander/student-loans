@@ -10,20 +10,24 @@ export default class Projection {
   }
 
   run () {
+    const onFinish = () => {
+      this._timelineData = {};
+
+      const projectionDates = this.projection.projectionDates;
+      const dateRange = range(this.projection.startDate, this.projection.endDate);
+
+      dateRange.forEach((date) => {
+        const projectionDatum = this.projection.projectionsByDate[date.toString()] || {};
+        this._timelineData[date.toString()] = new ProjectionState(date, projectionDatum);
+      });
+
+      this.options.onFinish();
+    };
+
     if (!this.projection) {
-      this.projection = new ProjectionV1(this.options);
+      this.projection = new ProjectionV1({ ...this.options, onFinish });
       this.projection.run();
     }
-
-    this._timelineData = {};
-
-    const projectionDates = this.projection.projectionDates;
-    const dateRange = range(this.projection.startDate, this.projection.endDate);
-
-    dateRange.forEach((date) => {
-      const projectionDatum = this.projection.projectionsByDate[date.toString()] || {};
-      this._timelineData[date.toString()] = new ProjectionState(date, projectionDatum);
-    });
   }
 
   getStateAtDate (date) {
