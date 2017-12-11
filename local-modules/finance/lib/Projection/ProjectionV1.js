@@ -6,7 +6,7 @@ import { ChangeTypes } from 'finance/lib/Projection/Constants';
 
 function _haveRemainingPrincipal(accounts) {
   return accounts.some(function(account) {
-    return account.getCurrentPrincipal() > 0;
+    return account.getPrincipal() > 0;
   });
 }
 
@@ -16,9 +16,9 @@ function _getRemainingBudget(budget, payments) {
   }, 0);
 }
 
-function _reduceAccountBalance(account, principal, interest) {
-  account.reducePrincipal(principal);
-  account.reduceInterest(interest);
+function reduceAccountBalance (account, principal, interest) {
+  account.adjustPrincipal(-principal);
+  account.adjustInterest(-interest);
 }
 
 function _applyInterest(accounts, days) {
@@ -48,9 +48,9 @@ function _updatePaymentAmounts(payment, payable, interest) {
 
 function _applyMinimumPayments(accounts, payments, budget) {
   for (var i in accounts) {
-    var payable = Math.min(budget, accounts[i].getMinimumPayment());
-    var interest = Math.min(payable, accounts[i].getCurrentInterest());
-    _reduceAccountBalance(accounts[i], payable - interest, interest);
+    const payable = Math.min(budget, accounts[i].getMinimumPayment());
+    const interest = Math.min(payable, accounts[i].getInterest());
+    reduceAccountBalance(accounts[i], payable - interest, interest);
     _updatePaymentAmounts(payments[i], payable, interest);
     budget -= payable;
   }
@@ -58,11 +58,11 @@ function _applyMinimumPayments(accounts, payments, budget) {
 
 function _applyBonusPayments(accounts, payments, budget) {
   for (var i in accounts) {
-    var payable = Math.min(budget, accounts[i].getMaximumPayment());
-    var interest = Math.min(payable, accounts[i].getCurrentInterest());
-    _reduceAccountBalance(accounts[i], payable - interest, interest);
+    const payable = Math.min(budget, accounts[i].getPrincipal() + accounts[i].getInterest());
+    const interest = Math.min(payable, accounts[i].getInterest());
+    reduceAccountBalance(accounts[i], payable - interest, interest);
     _updatePaymentAmounts(payments[i], payable, interest);
-    payments[i].balance = accounts[i].getCurrentPrincipal();
+    payments[i].balance = accounts[i].getPrincipal();
     budget -= payable;
   }
 }
@@ -113,7 +113,7 @@ export default class Projection {
         // get state of accounts at start of period
         for (let i = 0; i < accounts.length; i++) {
           accountStates[accounts[i].key] = {
-            balance: accounts[i].getCurrentPrincipal()
+            balance: accounts[i].getPrincipal()
           }
         }
 

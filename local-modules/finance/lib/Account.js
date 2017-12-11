@@ -5,54 +5,65 @@ import { floatToDollars } from 'units/Dollars';
 export default class Account {
   constructor (attr) {
     this.apr = attr.apr;
-    this.date = attr.date != null ? new Day(attr.date) : Day.today();
     this.interest = attr.interest || 0.0;
     this.key = attr.key;
-    this.minimum = attr.minimum;
+    this.lastPaymentDate = attr.lastPaymentDate != null ? new Day(attr.lastPaymentDate) : null;
+    this.minimumPayment = attr.minimumPayment;
     this.principal = attr.principal != null ? attr.principal : attr.originalPrincipal;
   }
 
   clone () {
-    return new Account({
+    return new Account(this.toJSON());
+  }
+
+  toJSON () {
+    return {
       apr: this.apr,
-      date: this.date.date(),
       interest: this.interest,
       key: this.key,
-      minimum: this.minimum,
+      lastPaymentDate: this.lastPaymentDate != null ? this.lastPaymentDate.toString() : null,
+      minimumPayment: this.minimumPayment,
       principal: this.principal
-    });
+    };
+  }
+
+  getMinimumPayment () {
+    return Math.min(this.principal, this.minimumPayment);
+  }
+
+  setPrincipal (amount) {
+    this.principal = amount;
   }
 
   getPrincipal () {
     return this.principal;
   }
 
-  getMinimumPayment () {
-    return Math.min(this.principal, this.minimum);
+  setInterest (amount) {
+    this.interest = amount;
   }
 
-  getMaximumPayment () {
-    return this.principal + this.interest;
-  }
-
-  getCurrentPrincipal () {
-    return this.principal;
-  }
-
-  getCurrentInterest () {
+  getInterest () {
     return this.interest;
   }
 
-  reducePrincipal (amount) {
-    this.principal -= amount;
+  adjustPrincipal (amount) {
+    this.principal += amount;
   }
 
-  reduceInterest (amount) {
-    this.interest -= amount;
+  adjustInterest (amount) {
+    this.interest += amount;
   }
 
   applyInterest (days) {
-    var periodRate = !!days ? (this.apr * days / 365) : this.apr / 12;
-    this.interest += floatToDollars(this.principal * periodRate);
+    this.interest += floatToDollars(this.principal * (this.apr * days / 365));
+  }
+
+  setLastPaymentDate (date) {
+    this.lastPaymentDate = new Day(date);
+  }
+
+  getLastPaymentDate () {
+    return this.lastPaymentDate;
   }
 }

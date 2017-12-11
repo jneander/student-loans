@@ -1,11 +1,14 @@
 export default class AccountState {
-  constructor (account, state = {}) {
-    this.account = account;
+  constructor (stateData = {}) {
     this.state = {
       interest: 0,
       principal: 0,
-      ...state
+      ...stateData
     };
+  }
+
+  clone () {
+    return new AccountState(this.state);
   }
 
   getPrincipal () {
@@ -21,6 +24,7 @@ export default class AccountState {
   }
 
   adjustBalance (amount) {
+
   }
 
   applyInterest (days) {
