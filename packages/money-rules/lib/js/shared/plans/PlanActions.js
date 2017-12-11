@@ -36,6 +36,5 @@ export function projectPlan () {
 export function updateBudget (budget) {
   return function (dispatch, _getState) {
     dispatch(setBudget(budget));
-    dispatch(projectPlan());
   }
 }

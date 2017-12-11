@@ -1,5 +1,21 @@
 import * as AccountAccessor from 'js/shared/accounts/AccountAccessor';
 import * as PlanActions from 'js/shared/plans/PlanActions';
+import * as PlanAccessor from 'js/shared/plans/PlanAccessor';
+
+function planChanged (previousState, currentState) {
+  const previousAccounts = AccountAccessor.getAccountList(previousState);
+  const currentAccounts = AccountAccessor.getAccountList(currentState);
+
+  let changed = previousAccounts !== currentAccounts;
+
+  if (!changed) {
+    const previousBudget = PlanAccessor.getBudget(previousState);
+    const currentBudget = PlanAccessor.getBudget(currentState);
+    changed = previousBudget !== currentBudget;
+  }
+
+  return changed;
+}
 
 export default class EventMachine {
   constructor (store) {
@@ -8,9 +24,7 @@ export default class EventMachine {
   }
 
   onStateChange (previousState, currentState) {
-    const previousAccounts = AccountAccessor.getAccountList(previousState);
-    const currentAccounts = AccountAccessor.getAccountList(currentState);
-    if (previousAccounts !== currentAccounts) {
+    if (planChanged(previousState, currentState)) {
       this.store.dispatch(PlanActions.projectPlan());
     }
   }
@@ -18,10 +32,14 @@ export default class EventMachine {
   start () {
     this.unsubscribe = this.store.subscribe(() => {
       const currentState = this.store.getState();
-      if (currentState !== this.previousState) {
+      if (currentState !== this.previousState && !this.handlingStateChange) {
+        this.handlingStateChange = true;
+
         const previousState = this.previousState;
         this.previousState = currentState;
         this.onStateChange(previousState, currentState);
+
+        this.handlingStateChange = false
       }
     });
   }
