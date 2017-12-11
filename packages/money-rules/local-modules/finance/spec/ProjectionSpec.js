@@ -1,7 +1,6 @@
 import sinon from 'sinon';
 
 import Account from 'finance/lib/Account';
-import AccountAdjustment from 'finance/lib/AccountAdjustment';
 import Projection from 'finance/lib/Projection';
 import Day from 'units/Day';
 
@@ -22,7 +21,6 @@ describe('Projection', () => {
 
   context('with one account', () => {
     let accounts;
-    let adjustments;
     let budget = 1000;
     let projection;
 
@@ -42,12 +40,7 @@ describe('Projection', () => {
           type: 'loan'
         })
       ];
-      adjustments = [
-        new AccountAdjustment({
-          newBalance: 10000
-        })
-      ];
-      projection = new Projection(accounts, adjustments, budget);
+      projection = new Projection({ accounts, budget });
       projection.run();
     });
 
