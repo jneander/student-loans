@@ -1,5 +1,6 @@
 import Day from 'units/Day';
 import { daysBetween, nextMonth, range, today } from 'units/Dates';
+import { floatToDollars } from 'units/Dollars';
 
 import Account from 'finance/lib/Account';
 import { ChangeTypes } from 'finance/lib/Projection/Constants';
@@ -21,9 +22,10 @@ function reduceAccountBalance (account, principal, interest) {
   account.adjustInterest(-interest);
 }
 
-function _applyInterest(accounts, days) {
-  accounts.forEach(function(account) {
-    account.applyInterest(days);
+function applyInterest (accounts, days) {
+  accounts.forEach((account) => {
+    const interest = account.getPrincipal() * (account.apr * days / 365);
+    account.adjustInterest(floatToDollars(interest));
   });
 }
 
@@ -119,7 +121,7 @@ export default class Projection {
 
         const paymentDate = period.end;
 
-        _applyInterest(accounts, daysBetween(period.start, period.end));
+        applyInterest(accounts, daysBetween(period.start, period.end));
         _finalizePayments(payments, paymentDate); // TODO: should this be the period start?
         _addNonzeroPayments(changes, payments);
 
