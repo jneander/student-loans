@@ -1,5 +1,7 @@
 import { merge, get, set } from 'redux-helpers/AccessorHelper';
 
+import AccountState from 'finance/lib/AccountState';
+
 export function getInitialState () {
   return {
     accounts: {
