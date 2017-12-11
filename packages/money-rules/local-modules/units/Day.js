@@ -24,6 +24,10 @@ export default class Day {
     return `${this._date.getFullYear()}/${month}/${day}`;
   }
 
+  toJSON () {
+    return this.toString();
+  }
+
   isOnOrBefore (day) {
     return this._date && day._date && this._date <= day._date;
   }
