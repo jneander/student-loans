@@ -8,8 +8,8 @@ export default class EventMachine {
   }
 
   onStateChange (previousState, currentState) {
-    const previousAccounts = AccountAccessor.listAccounts(previousState);
-    const currentAccounts = AccountAccessor.listAccounts(currentState);
+    const previousAccounts = AccountAccessor.getAccountList(previousState);
+    const currentAccounts = AccountAccessor.getAccountList(currentState);
     if (previousAccounts !== currentAccounts) {
       this.store.dispatch(PlanActions.projectPlan());
     }
