@@ -1,6 +1,10 @@
 import { MS_PER_DAY } from './Constants';
 
 export default class Day {
+  static from = function (date) {
+    return date != null ? new Day(date) : null;
+  };
+
   static today = function () {
     const today = new Date();
     return new Day(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
@@ -28,12 +32,20 @@ export default class Day {
     return this.toString();
   }
 
-  isOnOrBefore (day) {
-    return this._date && day._date && this._date <= day._date;
+  isAfter (day) {
+    return this._date && day._date && this._date > day._date;
+  }
+
+  isBefore (day) {
+    return this._date && day._date && this._date < day._date;
   }
 
   isOnOrAfter (day) {
     return this._date && day._date && this._date >= day._date;
+  }
+
+  isOnOrBefore (day) {
+    return this._date && day._date && this._date <= day._date;
   }
 
   equals (day) {
