@@ -7,9 +7,11 @@ export default class Account {
       ...attr,
       apr: attr.apr || 0.0,
       interest: attr.interest || 0.0,
-      lastPaymentDate: attr.lastPaymentDate != null ? new Day(attr.lastPaymentDate) : null,
+      lastPaymentDate: Day.from(attr.lastPaymentDate),
+      nextPaymentDate: Day.from(attr.nextPaymentDate),
       originationDate: new Day(attr.originationDate),
-      principal: attr.principal != null ? attr.principal : attr.originalPrincipal
+      principal: attr.principal != null ? attr.principal : attr.originalPrincipal,
+      updateDate: Day.from(attr.updateDate)
     };
   }
 
@@ -19,6 +21,10 @@ export default class Account {
 
   get apr () {
     return this._attr.apr;
+  }
+
+  get willAccrueInterest () {
+    return this._attr.principal != 0;
   }
 
   getMinimumPayment () {
@@ -50,11 +56,27 @@ export default class Account {
   }
 
   setLastPaymentDate (date) {
-    this._attr.lastPaymentDate = new Day(date);
+    this._attr.lastPaymentDate = Day.from(date);
   }
 
   getLastPaymentDate () {
     return this._attr.lastPaymentDate;
+  }
+
+  setNextPaymentDate (date) {
+    this._attr.nextPaymentDate = Day.from(date);
+  }
+
+  getNextPaymentDate () {
+    return this._attr.nextPaymentDate;
+  }
+
+  set updateDate (date) {
+    this._attr.updateDate = Day.from(date);
+  }
+
+  get updateDate () {
+    return this._attr.updateDate;
   }
 
   clone () {
