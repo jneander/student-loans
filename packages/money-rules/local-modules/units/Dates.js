@@ -35,7 +35,7 @@ export function range (startDate, endDate) {
   let currentDate = startDate;
   while (currentDate.isOnOrBefore(endDate)) {
     range.push(currentDate);
-    currentDate = currentDate.offset({ days: 1 });
+    currentDate = currentDate.offsetDay(1);
   }
 
   return range;
