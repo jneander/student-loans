@@ -1,6 +1,11 @@
 import { MS_PER_DAY } from './Constants';
+import Month from './Month';
 
 export default class Day {
+  static earliest = function (...dates) {
+    return dates.reduce((earliest, date) => date.isBefore(earliest) ? date : earliest);
+  };
+
   static from = function (date) {
     return date != null ? new Day(date) : null;
   };
@@ -20,6 +25,14 @@ export default class Day {
 
   date () {
     return this._date;
+  }
+
+  get year () {
+    return this._date.getFullYear();
+  }
+
+  get month () {
+    return this._date.getMonth() + 1;
   }
 
   toString () {
@@ -56,21 +69,22 @@ export default class Day {
     return Math.floor(Math.abs(this._date - day._date) / MS_PER_DAY);
   }
 
-  offset (options) {
-    const date = new Date(this._date.getFullYear(), this._date.getMonth(), this._date.getDate());
+  offsetYear (years) {
+    const lastDate = new Date(this._date.getFullYear() + years, this._date.getMonth() + 1, 0).getDate();
+    const dayDate = Math.min(this._date.getDate(), lastDate);
+    const date = new Date(this._date.getFullYear() + years, this._date.getMonth(), dayDate);
+    return new Day(date);
+  }
 
-    if (Number.isFinite(options.years)) {
-      date.setFullYear(date.getFullYear() + options.years);
-    }
+  offsetMonth (months) {
+    const lastDate = new Date(this._date.getFullYear(), this._date.getMonth() + months + 1, 0).getDate();
+    const dayDate = Math.min(this._date.getDate(), lastDate);
+    const date = new Date(this._date.getFullYear(), this._date.getMonth() + months, dayDate);
+    return new Day(date);
+  }
 
-    if (Number.isFinite(options.months)) {
-      date.setMonth(date.getMonth() + options.months);
-    }
-
-    if (Number.isFinite(options.days)) {
-      date.setDate(date.getDate() + options.days);
-    }
-
+  offsetDay (days) {
+    const date = new Date(this._date.getFullYear(), this._date.getMonth(), this._date.getDate() + days);
     return new Day(date);
   }
 }
