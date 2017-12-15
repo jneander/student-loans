@@ -23,10 +23,14 @@ module.exports = {
       use: {
         loader: 'babel-loader',
         options: {
-          plugins: ['react-hot-loader/babel'],
+          plugins: [
+            'react-hot-loader/babel',
+            'transform-async-generator-functions',
+            'transform-export-extensions',
+            'transform-object-rest-spread'
+          ],
           presets: [
-            ['es2015', { modules: false }],
-            'babel-preset-stage-1',
+            'es2017',
             'react'
           ]
         }
