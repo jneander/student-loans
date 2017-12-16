@@ -30,7 +30,7 @@ module.exports = function (config) {
       'local-modules/**/*Spec.js': ['webpack']
     },
 
-    reporters: ['progress'],
+    reporters: ['dots'],
 
     webpackServer: {
       noInfo: true
