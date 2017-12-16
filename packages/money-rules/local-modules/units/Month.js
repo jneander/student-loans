@@ -1,4 +1,6 @@
+import MapCache from 'utils/lib/MapCache';
 import Day from './Day';
+import DayRange from './DayRange';
 
 export default class Month {
   static thisMonth () {
@@ -15,15 +17,7 @@ export default class Month {
 
   constructor (date) {
     this._date = new Day(date);
-
-    this._cacheMap = {};
-    this._cache = (key, creator) => {
-      if (this._cacheMap[key]) {
-        return this._cacheMap[key];
-      }
-      this._cacheMap[key] = creator();
-      return this._cacheMap[key];
-    }
+    this._cache = new MapCache();
   }
 
   get length () {
@@ -31,26 +25,20 @@ export default class Month {
   }
 
   get startDate () {
-    return this._cache('startDate', () => (
+    return this._cache.cache('startDate', () => (
       new Day(new Date(this._date.year, this._date.month - 1, 1))
     ))
   }
 
   get endDate () {
-    return this._cache('endDate', () => (
+    return this._cache.cache('endDate', () => (
       new Day(new Date(this._date.year, this._date.month, 0))
     ))
   }
 
   get dates () {
-    return this._cache('dates', () => {
-      const dates = [];
-      let date = this.startDate;
-      while (date.isOnOrBefore(this.endDate)) {
-        dates.push(date);
-        date = date.offsetDay(1);
-      }
-      return dates;
+    return this._cache.cache('dates', () => {
+      return new DayRange(this.startDate, this.endDate).dates;
     });
   }
 
@@ -60,6 +48,11 @@ export default class Month {
 
   get nextMonth () {
     return new Month(new Date(this._date.year, this._date.month, 1));
+  }
+
+  getDate (day) {
+    const lastDate = new Date(this._date.year, this._date.month, 0).getDate();
+    return new Day(new Date(this._date.year, this._date.month - 1, Math.min(day, lastDate)));
   }
 
   toString () {

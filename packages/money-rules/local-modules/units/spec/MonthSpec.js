@@ -316,4 +316,16 @@ describe('Month', () => {
       expect(month.lastMonth.toString()).to.equal('2000/11');
     });
   });
+
+  describe('.getDate()', () => {
+    it('returns the date for the given day within the month', () => {
+      const month = new Month('2000/01');
+      expect(month.getDate(10).toString()).to.equal('2000/01/10');
+    });
+
+    it('returns the last day of the month when given a date higher than the length of the month', () => {
+      const month = new Month('2000/02');
+      expect(month.getDate(31).toString()).to.equal('2000/02/29');
+    });
+  });
 });
