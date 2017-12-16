@@ -2,15 +2,15 @@ import { MS_PER_DAY } from './Constants';
 import Month from './Month';
 
 export default class Day {
-  static earliest = function (...dates) {
+  static earliest (...dates) {
     return dates.reduce((earliest, date) => date.isBefore(earliest) ? date : earliest);
   };
 
-  static from = function (date) {
+  static from (date) {
     return date != null ? new Day(date) : null;
   };
 
-  static today = function () {
+  static today () {
     const today = new Date();
     return new Day(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
   };
@@ -33,6 +33,10 @@ export default class Day {
 
   get month () {
     return this._date.getMonth() + 1;
+  }
+
+  get day () {
+    return this._date.getDate();
   }
 
   toString () {
@@ -62,7 +66,7 @@ export default class Day {
   }
 
   equals (day) {
-    return this.toString() === day.toString();
+    return !!day && this.toString() === day.toString();
   }
 
   daysApartFrom (day) {
