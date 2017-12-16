@@ -16,6 +16,7 @@
     "dev": "node scripts/dev-server.js",
     "nuke": "rimraf node_modules",
     "spec": "karma start config/karma.conf.js",
+    "spec:report": "karma start config/karma.conf.js --reporters spec; exit 0",
     "spec:watch": "karma start --no-single-run config/karma.conf.js"
   },
   "repository": {
@@ -51,6 +52,7 @@
     "karma": "^1.7.1",
     "karma-chrome-launcher": "^2.2.0",
     "karma-mocha": "^1.3.0",
+    "karma-spec-reporter": "0.0.32",
     "karma-webpack": "^2.0.4",
     "mocha": "^3.5.3",
     "react-hot-loader": "^3.0.0-beta.7",
