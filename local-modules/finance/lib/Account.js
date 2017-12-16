@@ -27,6 +27,10 @@ export default class Account {
     return this._attr.principal != 0;
   }
 
+  get requiredContribution () {
+    return Math.min(this._attr.principal, this._attr.minimumPayment);
+  }
+
   getMinimumPayment () {
     return Math.min(this._attr.principal, this._attr.minimumPayment);
   }
@@ -55,6 +59,14 @@ export default class Account {
     this._attr.interest += amount;
   }
 
+  set lastPaymentDate (date) {
+    this._attr.lastPaymentDate = Day.from(date);
+  }
+
+  get lastPaymentDate () {
+    return this._attr.lastPaymentDate;
+  }
+
   setLastPaymentDate (date) {
     this._attr.lastPaymentDate = Day.from(date);
   }
@@ -63,12 +75,24 @@ export default class Account {
     return this._attr.lastPaymentDate;
   }
 
+  set nextPaymentDate (date) {
+    this._attr.nextPaymentDate = Day.from(date);
+  }
+
+  get nextPaymentDate () {
+    return this._attr.nextPaymentDate;
+  }
+
   setNextPaymentDate (date) {
     this._attr.nextPaymentDate = Day.from(date);
   }
 
   getNextPaymentDate () {
     return this._attr.nextPaymentDate;
+  }
+
+  get expectsPayment () {
+    return !!this._attr.nextPaymentDate;
   }
 
   set updateDate (date) {
