@@ -4,15 +4,19 @@ import { floatToDollars } from 'units/Dollars';
 import BoundedLoop from 'utils/lib/BoundedLoop';
 
 import Account from 'finance/lib/Account';
+import Interest from 'finance/lib/Interest';
+import Payment from 'finance/lib/Payment';
 import { ChangeTypes } from 'finance/lib/Projection/Constants';
 
-function _haveRemainingPrincipal(accounts) {
+import ProjectionState from './ProjectionState';
+
+function haveRemainingPrincipal (accounts) {
   return accounts.some(function(account) {
     return account.getPrincipal() > 0;
   });
 }
 
-function _getRemainingBudget(budget, payments) {
+function getRemainingBudget (budget, payments) {
   return budget - payments.reduce(function(sum, payment) {
     return sum + payment.total;
   }, 0);
@@ -23,24 +27,19 @@ function reduceAccountBalance (account, principal, interest) {
   account.adjustInterest(-interest);
 }
 
+function calculateInterest (account, days) {
+  return account.getPrincipal() * (account.apr * days / 365);
+}
+
 function applyInterest (accounts, days) {
   accounts.forEach((account) => {
-    const interest = account.getPrincipal() * (account.apr * days / 365);
+    const interest = calculateInterest(account, days);
     account.adjustInterest(floatToDollars(interest));
   });
 }
 
-function _createBlankPayments(accounts) {
-  return accounts.map(function(account) {
-    return {
-      accountKey: account.key,
-      interest: 0,
-      key: account.key, // replace with accountKey
-      principal: 0,
-      total: 0,
-      type: ChangeTypes.PAYMENT
-    };
-  });
+function createBlankPayments (accounts) {
+  return accounts.map(account => new Payment({ accountKey: account.key }))
 }
 
 function _updatePaymentAmounts(payment, payable, interest) {
@@ -49,7 +48,7 @@ function _updatePaymentAmounts(payment, payable, interest) {
   payment.interest += interest;
 }
 
-function _applyMinimumPayments(accounts, payments, budget) {
+function applyMinimumPayments (accounts, payments, budget) {
   for (var i in accounts) {
     const payable = Math.min(budget, accounts[i].getMinimumPayment());
     const interest = Math.min(payable, accounts[i].getInterest());
@@ -59,13 +58,12 @@ function _applyMinimumPayments(accounts, payments, budget) {
   }
 }
 
-function _applyBonusPayments(accounts, payments, budget) {
+function applyBonusPayments (accounts, payments, budget) {
   for (var i in accounts) {
     const payable = Math.min(budget, accounts[i].getPrincipal() + accounts[i].getInterest());
     const interest = Math.min(payable, accounts[i].getInterest());
     reduceAccountBalance(accounts[i], payable - interest, interest);
     _updatePaymentAmounts(payments[i], payable, interest);
-    payments[i].balance = accounts[i].getPrincipal();
     budget -= payable;
   }
 }
@@ -76,16 +74,37 @@ function _finalizePayments(payments, currentDate) {
   });
 }
 
-function _addNonzeroPayments(allPayments, newPayments) {
-  var nonzero = newPayments.filter(function(payment) {
-    return payment.total > 0;
-  });
-  Array.prototype.push.apply(allPayments, nonzero);
-}
-
 function _updatePeriod(period) {
   period.start = new Date(period.end);
   period.end = nextMonth(period.end);
+}
+
+function applyInterestOnDate (account, date, projectionsByDate) {
+  if (account.willAccrueInterest) {
+    const interest = calculateInterest(account, 1);
+    account.adjustInterest(interest);
+    const projection = projectionsByDate[date.toString()] || { date, accountStates: {}, changes: [] };
+    projection.accountStates[account.key] = getAccountState(account);
+    projection.changes.push(new Interest({ accountKey: account.key, interest }));
+  }
+}
+
+function makeAccountsCurrent (accounts, projectionsByDate) {
+  const today = Day.today();
+  accounts.forEach((account) => {
+    let loopDate = account.getLastPaymentDate();
+    while (account.willAccrueInterest && loopDate.isBefore(today)) {
+      applyInterestOnDate(account, loopDate, projectionsByDate);
+      loopDate = loopDate.offsetDay(1);
+    }
+  });
+}
+
+function getAccountState (account) {
+  return {
+    balance: account.getPrincipal(),
+    currentPrincipal: account.getPrincipal()
+  };
 }
 
 export default class Projection {
@@ -95,45 +114,64 @@ export default class Projection {
     this.projectionsByDate = {};
   }
 
+  getStateAtDate (date) {
+    const projectionDatum = this.projectionsByDate[date.toString()] || {};
+    return new ProjectionState(date, projectionDatum);
+  }
+
   run () {
     if (!this._timeline) {
       const accounts = this.options.accounts.map(account => account.clone());
 
       this.startDate = this.options.startDate;
 
+      // const loopDate = accounts.reduce((date, account) => {
+      //   const accountDate = account.getLastPaymentDate();
+      //   return date.isOnOrBefore(accountDate) ? date : accountDate;
+      // }, accounts[0].getLastPaymentDate());
+      // const limitDate = loopDate.offsetYear(20);
+
       let limit = 240;
       const period = { start: this.startDate.date(), end: this.startDate.date() };
 
       let boundedLoop;
 
+      // make accounts current
+      makeAccountsCurrent(accounts, this.projectionsByDate);
+
+      // const dayLoop = () => {
+      //   if (!haveRemainingPrincipal(accounts) || loopDate.isAfter(limitDate)) {
+      //     boundedLoop.stop();
+      //     this.options.onFinish();
+      //   }
+
+      //   loopDate = loopDate.offsetDay(1);
+      // }
+
       const loopFn = () => {
-        if (!_haveRemainingPrincipal(accounts) || limit-- <= 0) {
+        if (!haveRemainingPrincipal(accounts) || limit-- <= 0) {
           boundedLoop.stop();
           this.options.onFinish();
           return;
         }
 
-        const accountStates = {};
-        const changes = [];
+        const payments = createBlankPayments(accounts);
+        applyMinimumPayments(accounts, payments, this.options.budget);
 
-        const payments = _createBlankPayments(accounts);
-        _applyMinimumPayments(accounts, payments, this.options.budget);
-        const remainingBudget = _getRemainingBudget(this.options.budget, payments);
-        _applyBonusPayments(accounts, payments, remainingBudget);
+        const remainingBudget = getRemainingBudget(this.options.budget, payments);
+        applyBonusPayments(accounts, payments, remainingBudget);
+
+        const accountStates = {};
 
         // get state of accounts at start of period
         for (let i = 0; i < accounts.length; i++) {
-          accountStates[accounts[i].key] = {
-            balance: accounts[i].getPrincipal()
-          }
+          accountStates[accounts[i].key] = getAccountState(accounts[i]);
         }
 
-        const paymentDate = period.end;
-
         applyInterest(accounts, daysBetween(period.start, period.end));
-        _finalizePayments(payments, paymentDate); // TODO: should this be the period start?
-        _addNonzeroPayments(changes, payments);
 
+        const paymentDate = period.end;
+        const changes = payments.filter(payment => payment.total > 0);
         const date = new Day(paymentDate);
 
         this.projectionsByDate[date.toString()] = { date, accountStates, changes };
@@ -147,3 +185,6 @@ export default class Projection {
     }
   }
 }
+
+// different periods per account
+// start date of first period is last payment date

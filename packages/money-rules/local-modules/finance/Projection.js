@@ -1,5 +1,5 @@
 import Day from 'units/Day';
-import { range } from 'units/Dates';
+import DayRange from 'units/DayRange';
 
 import ProjectionV1 from './lib/Projection/ProjectionV1';
 import ProjectionState from './lib/Projection/ProjectionState';
@@ -13,12 +13,10 @@ export default class Projection {
     const onFinish = () => {
       this._timelineData = {};
 
-      const projectionDates = this.projection.projectionDates;
-      const dateRange = range(this.projection.startDate, this.projection.endDate);
+      const dateRange = new DayRange(this.projection.startDate, this.projection.endDate).dates;
 
       dateRange.forEach((date) => {
-        const projectionDatum = this.projection.projectionsByDate[date.toString()] || {};
-        this._timelineData[date.toString()] = new ProjectionState(date, projectionDatum);
+        this._timelineData[date.toString()] = this.projection.getStateAtDate(date);
       });
 
       this.options.onFinish();
