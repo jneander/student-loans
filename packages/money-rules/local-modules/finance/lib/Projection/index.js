@@ -1,7 +1,5 @@
 import Day from 'units/Day';
 
-import Cycle from '../Cycle';
-
 class AccountState {
   constructor (account) {
     this._account = account;
@@ -20,10 +18,6 @@ class AccountHistoryRecord {
   constructor (account) {
     this.accountState = new AccountState(account);
   }
-
-  get length () {
-    return 0;
-  }
 }
 
 class HistoryRecords {
@@ -32,13 +26,11 @@ class HistoryRecords {
   }
 
   setAccountRecord (account) {
-    this._accountMap[account.key] = account.clone();
+    this._accountMap[account.key] = new AccountHistoryRecord(account.clone());
   }
 
   forAccount (accountKey) {
-    if (this._accountMap[accountKey]) {
-      return new AccountHistoryRecord(this._accountMap[accountKey]);
-    }
+    return this._accountMap[accountKey];
   }
 }
 
@@ -73,59 +65,56 @@ export default class Projection {
     const { accounts, budget } = this._options;
     const dates = this._options.cycle.dates;
 
-    const applyInterestForDates = (account, startDate, endDate) => {
-
-    };
-
-    const accountContributionDates = accounts.reduce((map, account) => (
-      { ...map, [account.key]: account.nextContributionDate }
-    ), {});
-
-    // apply interest
-    // apply minimum payments
-    // apply bonus payments
-    // apply remaining cycle interest
-
-    // for (let a = 0; a < this._options.accounts.length; a++) {
-    //   const account = this._options.accounts[a];
-    //   const interest = account.dailyInterest;
-    //   if (interest) {
-    //     account.adjustBalance(interest);
-    //   }
-    // }
-
     for (let i = 0; i < dates.length; i++) {
-      const date = dates[i];
+      this._history.initRecordsForDate(dates[i]);
+    }
 
-      const records = this._history.initRecordsForDate(date);
-
-      for (let a = 0; a < accounts.length; a++) {
-        const account = accounts[a];
+    const applyInterestForDates = (account, startDate, endDate) => {
+      let date = startDate;
+      while (date.isOnOrBefore(endDate)) {
+        const records = this._history.getRecordsOnDate(date);
         const interest = account.dailyInterest;
         if (interest) {
           account.adjustBalance(interest);
         }
+        records.setAccountRecord(account);
+        date = date.offsetDay(1);
       }
+    };
 
-      for (let a = 0; a < accounts.length; a++) {
-        const account = accounts[a];
-        if (date.equals(account.nextContributionDate)) {
-          let amount = budget.take(account.minimumContribution);
-          account.adjustBalance(amount);
-        }
+    // apply interest before payment
+    for (let a = 0; a < accounts.length; a++) {
+      if (accounts[a].nextContributionDate) {
+        applyInterestForDates(accounts[a], dates[0], accounts[a].nextContributionDate);
       }
+    }
 
-      for (let a = 0; a < accounts.length; a++) {
-        const account = accounts[a];
-        if (date.equals(account.nextContributionDate)) {
-          let amount = budget.take(account.maximumContribution);
-          account.adjustBalance(amount);
-        }
-      }
+    // apply minimum payments
+    for (let a = 0; a < accounts.length; a++) {
+      const account = accounts[a];
+      let amount = budget.take(account.minimumContribution);
+      account.adjustBalance(amount);
+    }
 
-      for (let a = 0; a < accounts.length; a++) {
+    // apply bonus payments
+    for (let a = 0; a < accounts.length; a++) {
+      const account = accounts[a];
+      let amount = budget.take(account.maximumContribution);
+      account.adjustBalance(amount);
+    }
+
+    // set records from payments
+    for (let a = 0; a < accounts.length; a++) {
+      if (accounts[a].nextContributionDate) {
+        const records = this._history.getRecordsOnDate(accounts[a].nextContributionDate);
         records.setAccountRecord(accounts[a]);
       }
+    }
+
+    // apply remaining cycle interest
+    for (let a = 0; a < accounts.length; a++) {
+      const startDate = accounts[a].nextContributionDate ? accounts[a].nextContributionDate.offsetDay(1) : dates[0];
+      applyInterestForDates(accounts[a], startDate, dates[dates.length - 1]);
     }
 
     return new Promise((resolve) => {

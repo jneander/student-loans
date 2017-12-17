@@ -97,7 +97,7 @@ describe('Projection', () => {
     });
   });
 
-  context('with an active loan account ', () => {
+  context('with an active loan account', () => {
     beforeEach(() => {
       projectionOptions.accounts = [
         new LoanAccount({
