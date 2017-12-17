@@ -260,7 +260,7 @@ describe('Projection', () => {
     it('accrues interest', async () => {
       const history = await runProjection();
       const record = getAccountRecord(history, 'example-1', new Day('2000/01/14'));
-      expect(record.accountState.interest.toPrecision(2)).to.equal('0.38');
+      expect(record.accountState.interest.toFixed(2)).to.equal('0.38');
     });
 
     it('applies contributions after accruing interest', async () => {
@@ -268,9 +268,16 @@ describe('Projection', () => {
       const record = getAccountRecord(history, 'example-1', new Day('2000/01/15'));
       expect(record.accountState.interest).to.equal(0);
     });
+
+    it('continues accruing interest for an account on the next day after applying a contribution', async () => {
+      const history = await runProjection();
+      const record = getAccountRecord(history, 'example-1', new Day('2000/01/16'));
+      expect(record.accountState.interest.toFixed(2)).to.equal('0.03');
+    });
   });
 
   // with a cycle not aligned with calendar months
   // set the next payment date to null when the account has a zero balance
   // accounts for accrued interest in the cycle before making a contribution
+  // when the account has no nextContributionDate (is paid off)
 });

@@ -27,14 +27,17 @@ class AccountHistoryRecord {
 }
 
 class HistoryRecords {
-  constructor (accounts) {
-    this._accounts = accounts.map(account => account.clone());
+  constructor () {
+    this._accountMap = {};
+  }
+
+  setAccountRecord (account) {
+    this._accountMap[account.key] = account.clone();
   }
 
   forAccount (accountKey) {
-    const account = this._accounts.find(account => account.key === accountKey);
-    if (account) {
-      return new AccountHistoryRecord(account);
+    if (this._accountMap[accountKey]) {
+      return new AccountHistoryRecord(this._accountMap[accountKey]);
     }
   }
 }
@@ -46,8 +49,8 @@ class History {
     };
   }
 
-  initRecordsForDate (date, accounts) {
-    this._data.recordsByDate[date.toString()] = new HistoryRecords(accounts);
+  initRecordsForDate (date) {
+    return this._data.recordsByDate[date.toString()] = new HistoryRecords();
   }
 
   getRecordsOnDate (date) {
@@ -67,37 +70,62 @@ export default class Projection {
   // significant dates in cycle
 
   async run () {
-    const budget = this._options.budget;
+    const { accounts, budget } = this._options;
     const dates = this._options.cycle.dates;
+
+    const applyInterestForDates = (account, startDate, endDate) => {
+
+    };
+
+    const accountContributionDates = accounts.reduce((map, account) => (
+      { ...map, [account.key]: account.nextContributionDate }
+    ), {});
+
+    // apply interest
+    // apply minimum payments
+    // apply bonus payments
+    // apply remaining cycle interest
+
+    // for (let a = 0; a < this._options.accounts.length; a++) {
+    //   const account = this._options.accounts[a];
+    //   const interest = account.dailyInterest;
+    //   if (interest) {
+    //     account.adjustBalance(interest);
+    //   }
+    // }
 
     for (let i = 0; i < dates.length; i++) {
       const date = dates[i];
 
-      for (let a = 0; a < this._options.accounts.length; a++) {
-        const account = this._options.accounts[a];
+      const records = this._history.initRecordsForDate(date);
+
+      for (let a = 0; a < accounts.length; a++) {
+        const account = accounts[a];
         const interest = account.dailyInterest;
         if (interest) {
           account.adjustBalance(interest);
         }
       }
 
-      for (let a = 0; a < this._options.accounts.length; a++) {
-        const account = this._options.accounts[a];
+      for (let a = 0; a < accounts.length; a++) {
+        const account = accounts[a];
         if (date.equals(account.nextContributionDate)) {
           let amount = budget.take(account.minimumContribution);
           account.adjustBalance(amount);
         }
       }
 
-      for (let a = 0; a < this._options.accounts.length; a++) {
-        const account = this._options.accounts[a];
+      for (let a = 0; a < accounts.length; a++) {
+        const account = accounts[a];
         if (date.equals(account.nextContributionDate)) {
           let amount = budget.take(account.maximumContribution);
           account.adjustBalance(amount);
         }
       }
 
-      this._history.initRecordsForDate(date, this._options.accounts);
+      for (let a = 0; a < accounts.length; a++) {
+        records.setAccountRecord(accounts[a]);
+      }
     }
 
     return new Promise((resolve) => {
