@@ -9,6 +9,10 @@ export default class LoanAccount extends Account {
     this.nextContributionDate = attr.nextPaymentDate;
   }
 
+  set apr (apr) {
+    this._attr.apr = apr || 0;
+  }
+
   get apr () {
     return this._attr.apr || 0;
   }
