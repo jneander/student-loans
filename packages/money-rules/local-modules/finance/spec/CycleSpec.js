@@ -1,6 +1,28 @@
 import Cycle from 'finance/lib/Cycle';
 
 describe('Cycle', () => {
+  describe('.create()', () => {
+    it('uses the given start date when it matches the given day', () => {
+      const cycle = Cycle.create(5, '2000/01/05');
+      expect(cycle.startDate.toString()).to.equal('2000/01/05');
+    });
+
+    it('adjusts the start date backward when it is before the given day', () => {
+      const cycle = Cycle.create(6, '2000/01/05');
+      expect(cycle.startDate.toString()).to.equal('1999/12/06');
+    });
+
+    it('adjusts the start date backward when it is after the given day', () => {
+      const cycle = Cycle.create(4, '2000/01/05');
+      expect(cycle.startDate.toString()).to.equal('2000/01/04');
+    });
+
+    it('uses the first day of the month for the given start date when given an invalid day', () => {
+      const cycle = Cycle.create('invalid', '2000/01/05');
+      expect(cycle.startDate.toString()).to.equal('2000/01/01');
+    });
+  });
+
   describe('.startDate', () => {
     it('is the first date of the cycle', () => {
       const cycle = new Cycle({ startDate: '2000/01/05' });

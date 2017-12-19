@@ -3,7 +3,7 @@ import Month from './Month';
 
 export default class Day {
   static earliest (...dates) {
-    return dates.reduce((earliest, date) => date.isBefore(earliest) ? date : earliest);
+    return dates.reduce((earliest, date) => date.isBefore(earliest) ? date : earliest, dates[0]);
   };
 
   static from (date) {
