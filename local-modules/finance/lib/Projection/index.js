@@ -1,4 +1,5 @@
 import Day from 'units/Day';
+import DayRange from 'units/DayRange';
 
 class AccountState {
   constructor (account) {
@@ -53,9 +54,8 @@ class History {
 export default class Projection {
   constructor (options = {}) {
     this._options = { ...options };
-    this._state = {};
+    // this._options.endDate = options.
 
-    this._state.startDate = Day.today();
     this._history = new History();
   }
 
@@ -63,11 +63,9 @@ export default class Projection {
 
   async run () {
     const { accounts, budget } = this._options;
-    const dates = this._options.cycle.dates;
 
-    for (let i = 0; i < dates.length; i++) {
-      this._history.initRecordsForDate(dates[i]);
-    }
+    let cycle = this._options.cycle;
+    const endDate = new Day(this._options.endDate);
 
     const applyInterestForDates = (account, startDate, endDate) => {
       let date = startDate;
@@ -77,48 +75,80 @@ export default class Projection {
         if (interest) {
           account.adjustBalance(interest);
         }
+        account.updateDate = date;
         records.setAccountRecord(account);
         date = date.offsetDay(1);
       }
     };
 
-    // apply interest before payment
-    for (let a = 0; a < accounts.length; a++) {
-      if (accounts[a].nextContributionDate) {
-        applyInterestForDates(accounts[a], dates[0], accounts[a].nextContributionDate);
+    const historyStartDate = Day.earliest(...accounts.map(account => account.updateDate));
+    const historyEndDate = cycle.startDate.offsetDay(-1);
+
+    const historyDates = new DayRange(historyStartDate, historyEndDate).dates;
+    for (let i = 0; i < historyDates.length; i++) {
+      this._history.initRecordsForDate(historyDates[i]);
+    }
+
+    while (cycle.endDate.isOnOrBefore(endDate)) {
+      const dates = cycle.dates;
+
+      for (let i = 0; i < dates.length; i++) {
+        this._history.initRecordsForDate(dates[i]);
       }
-    }
 
-    // apply minimum payments
-    for (let a = 0; a < accounts.length; a++) {
-      const account = accounts[a];
-      let amount = budget.take(account.minimumContribution);
-      account.adjustBalance(amount);
-    }
-
-    // apply bonus payments
-    for (let a = 0; a < accounts.length; a++) {
-      const account = accounts[a];
-      let amount = budget.take(account.maximumContribution);
-      account.adjustBalance(amount);
-    }
-
-    // set records from payments
-    for (let a = 0; a < accounts.length; a++) {
-      if (accounts[a].nextContributionDate) {
-        const records = this._history.getRecordsOnDate(accounts[a].nextContributionDate);
-        records.setAccountRecord(accounts[a]);
+      for (let i = 0; i < accounts.length; i++) {
+        const records = this._history.getRecordsOnDate(accounts[i].updateDate);
+        records.setAccountRecord(accounts[i]);
+        accounts[i].updateDate = accounts[i].updateDate.offsetDay(1);
       }
+
+      // apply interest before payment
+      for (let i = 0; i < accounts.length; i++) {
+        if (accounts[i].nextContributionDate) {
+          const startDate = accounts[i].updateDate;
+          applyInterestForDates(accounts[i], startDate, accounts[i].nextContributionDate);
+        }
+      }
+
+      // apply minimum payments
+      // this will take place on the account's current update date
+      for (let i = 0; i < accounts.length; i++) {
+        const account = accounts[i];
+        let amount = budget.take(account.minimumContribution);
+        account.adjustBalance(amount);
+      }
+
+      // apply bonus payments
+      // this will take place on the account's current update date
+      for (let i = 0; i < accounts.length; i++) {
+        const account = accounts[i];
+        let amount = budget.take(account.maximumContribution);
+        account.adjustBalance(amount);
+      }
+
+      // set records from payments
+      // this will take place on the account's current update date
+      for (let i = 0; i < accounts.length; i++) {
+        if (accounts[i].nextContributionDate) {
+          const records = this._history.getRecordsOnDate(accounts[i].updateDate);
+          records.setAccountRecord(accounts[i]);
+        }
+      }
+
+      // apply remaining cycle interest
+      for (let i = 0; i < accounts.length; i++) {
+        const startDate = accounts[i].nextContributionDate ? accounts[i].nextContributionDate.offsetDay(1) : dates[0];
+        applyInterestForDates(accounts[i], startDate, dates[dates.length - 1]);
+
+        if (accounts[i].nextContributionDate) {
+          accounts[i].nextContributionDate = accounts[i].nextContributionDate.offsetMonth(1);
+        }
+      }
+
+      cycle = cycle.nextCycle;
+      budget.reload();
     }
 
-    // apply remaining cycle interest
-    for (let a = 0; a < accounts.length; a++) {
-      const startDate = accounts[a].nextContributionDate ? accounts[a].nextContributionDate.offsetDay(1) : dates[0];
-      applyInterestForDates(accounts[a], startDate, dates[dates.length - 1]);
-    }
-
-    return new Promise((resolve) => {
-      resolve(this._history);
-    });
+    return Promise.resolve(this._history);
   }
 }

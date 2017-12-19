@@ -3,6 +3,17 @@ import DayRange from 'units/DayRange';
 import MapCache from 'utils/lib/MapCache';
 
 export default class Cycle {
+  static create (day, startDate) {
+    let validDay = Math.min(28, Math.max(1, parseInt(day, 10)));
+    validDay = isNaN(validDay) ? 1 : validDay;
+    let date = new Day(startDate);
+    // TODO validate date
+    while (date.day !== validDay) {
+      date = date.offsetDay(-1);
+    }
+    return new Cycle({ startDate: date });
+  }
+
   constructor (options = {}) {
     this._options = { ...options };
 
