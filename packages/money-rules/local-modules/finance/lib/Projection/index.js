@@ -49,12 +49,26 @@ class History {
   getRecordsOnDate (date) {
     return this._data.recordsByDate[date.toString()];
   }
+
+  // setAccountRecord (date, account) {
+  //   let records = this._data.recordsByDate[date.toString()];
+  //   if (!records) {
+  //     records = this._data.recordsByDate[date.toString()] = new HistoryRecords();
+  //   }
+  //   records.setAccountRecord(account);
+  // }
+
+  // getAccountRecord (date, accountKey) {
+  //   const records = this._data.recordsByDate[date.toString()];
+  //   if (records) {
+  //     return records.forAccount(accountKey);
+  //   }
+  // }
 }
 
 export default class Projection {
   constructor (options = {}) {
     this._options = { ...options };
-    // this._options.endDate = options.
 
     this._history = new History();
   }
