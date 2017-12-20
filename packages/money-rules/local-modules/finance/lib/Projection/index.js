@@ -1,7 +1,7 @@
 import Day from 'units/Day';
 import DayRange from 'units/DayRange';
 
-import { INTEREST } from './Event';
+import { CONTRIBUTION, INTEREST } from './Event';
 
 class AccountState {
   constructor (account) {
@@ -22,19 +22,32 @@ class AccountHistoryRecord {
     this.accountState = new AccountState(account);
     this.events = [];
   }
+
+  updateAccountState (account) {
+    this.accountState = new AccountState(account);
+  }
+
+  addEvent (event) {
+    this.events.push(event);
+  }
 }
 
 class HistoryRecords {
-  constructor () {
+  constructor (date) {
+    this.date = date;
     this._accountMap = {};
   }
 
   setAccountRecord (account) {
-    this._accountMap[account.key] = new AccountHistoryRecord(account.clone());
+    if (this._accountMap[account.key]) {
+      this._accountMap[account.key].updateAccountState(account.clone());
+    } else {
+      this._accountMap[account.key] = new AccountHistoryRecord(account.clone());
+    }
   }
 
   addEvent (event) {
-    this._accountMap[event.accountKey].events.push(event);
+    this._accountMap[event.accountKey].addEvent(event);
   }
 
   forAccount (accountKey) {
@@ -50,7 +63,7 @@ class History {
   }
 
   initRecordsForDate (date) {
-    return this._data.recordsByDate[date.toString()] = new HistoryRecords();
+    return this._data.recordsByDate[date.toString()] = new HistoryRecords(date);
   }
 
   getRecordsOnDate (date) {
@@ -98,7 +111,9 @@ export default class Projection {
         }
         account.updateDate = date;
         records.setAccountRecord(account);
-        records.addEvent({ accountKey: account.key, amount: interest, type: INTEREST });
+        if (interest) {
+          records.addEvent({ accountKey: account.key, amount: interest, type: INTEREST });
+        }
         date = date.offsetDay(1);
       }
     };
@@ -132,12 +147,23 @@ export default class Projection {
         }
       }
 
+      const contributionEvents = {};
+
       // apply minimum payments
       // this will take place on the account's current update date
       for (let i = 0; i < accounts.length; i++) {
         const account = accounts[i];
         let amount = budget.take(account.minimumContribution);
-        account.adjustBalance(amount);
+        const { principal, interest } = account.adjustBalance(amount);
+
+        if (amount) {
+          contributionEvents[account.key] = {
+            accountKey: accounts[i].key,
+            interest,
+            principal,
+            type: CONTRIBUTION
+          };
+        }
       }
 
       // apply bonus payments
@@ -145,7 +171,11 @@ export default class Projection {
       for (let i = 0; i < accounts.length; i++) {
         const account = accounts[i];
         let amount = budget.take(account.maximumContribution);
-        account.adjustBalance(amount);
+        const { principal, interest } = account.adjustBalance(amount);
+        if (amount && contributionEvents[account.key]) {
+          contributionEvents[account.key].principal += principal;
+          contributionEvents[account.key].interest += interest;
+        }
       }
 
       // set records from payments
@@ -154,6 +184,9 @@ export default class Projection {
         if (accounts[i].nextContributionDate) {
           const records = this._history.getRecordsOnDate(accounts[i].updateDate);
           records.setAccountRecord(accounts[i]);
+          if (contributionEvents[accounts[i].key]) {
+            records.addEvent(contributionEvents[accounts[i].key]);
+          }
         }
       }
 
