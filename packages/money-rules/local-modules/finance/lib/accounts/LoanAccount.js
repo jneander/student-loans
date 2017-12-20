@@ -18,11 +18,11 @@ export default class LoanAccount extends Account {
   }
 
   get dailyInterest () {
-    return -this.principal * this.apr / 365;
+    return this.principal * this.apr / 365;
   };
 
   get balance () {
-    return 0 - this._attr.interest - this._attr.principal;
+    return this._attr.interest + this._attr.principal;
   }
 
   set interest (amount) {
@@ -42,10 +42,10 @@ export default class LoanAccount extends Account {
   }
 
   adjustBalance (amount) {
-    const interestAmount = Math.min(this._attr.interest, amount);
-    this._attr.interest -= interestAmount;
+    const interestAmount = Math.min(-this._attr.interest, amount);
+    this._attr.interest += interestAmount;
     const remainder = amount - interestAmount;
-    this._attr.principal -= Math.min(this._attr.principal, remainder);
+    this._attr.principal += Math.min(-this._attr.principal, remainder);
   }
 
   adjustPrincipal (amount) {
