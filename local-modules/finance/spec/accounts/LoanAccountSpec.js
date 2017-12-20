@@ -24,59 +24,59 @@ describe('LoanAccount', () => {
       expect(account.balance).to.equal(0);
     });
 
-    it('subtracts principal and interest from zero', () => {
-      const account = createAccount({ principal: 20, interest: 10 });
+    it('adds principal and interest', () => {
+      const account = createAccount({ principal: -20, interest: -10 });
       expect(account.balance).to.equal(-30);
     });
   });
 
   describe('.adjustBalance()', () => {
-    it('subtracts the given amount from interest', () => {
+    it('adds the given amount to interest', () => {
       const account = createAccount({ principal: 20, interest: 10 });
       account.adjustBalance(10);
       expect(account.interest).to.equal(0);
     });
 
-    it('does not subtract more interest than present', () => {
+    it('does not add more interest than needed to reach zero', () => {
       const account = createAccount({ principal: 20, interest: 10 });
       account.adjustBalance(40);
       expect(account.interest).to.equal(0);
     });
 
-    it('subtracts the given amount from principal', () => {
-      const account = createAccount({ principal: 20, interest: 0 });
+    it('adds the given amount to principal', () => {
+      const account = createAccount({ principal: -20, interest: 0 });
       account.adjustBalance(20);
       expect(account.principal).to.equal(0);
     });
 
-    it('does not subtract more principal than present', () => {
-      const account = createAccount({ principal: 20, interest: 0 });
+    it('does not add more principal than needed to reach zero', () => {
+      const account = createAccount({ principal: -20, interest: 0 });
       account.adjustBalance(40);
       expect(account.principal).to.equal(0);
     });
 
     it('adjusts interest before adjusting principal', () => {
-      const account = createAccount({ principal: 20, interest: 10 });
+      const account = createAccount({ principal: -20, interest: -10 });
       account.adjustBalance(25);
-      expect(account.principal).to.equal(5);
+      expect(account.principal).to.equal(-5);
     });
 
     it('negative adjustments increase interest', () => {
-      const account = createAccount({ principal: 20, interest: 10 });
+      const account = createAccount({ principal: -20, interest: -10 });
       account.adjustBalance(-30);
-      expect(account.interest).to.equal(40);
+      expect(account.interest).to.equal(-40);
     });
 
     it('negative adjustments do not increase principal', () => {
-      const account = createAccount({ principal: 20, interest: 10 });
+      const account = createAccount({ principal: -20, interest: -10 });
       account.adjustBalance(-30);
-      expect(account.principal).to.equal(20);
+      expect(account.principal).to.equal(-20);
     });
   });
 
   describe('.minimumContribution', () => {
     it('is equal to the minimum payment', () => {
-      const account = createAccount({ principal: 100, interest: 0, minimumPayment: 10 });
+      const account = createAccount({ principal: -100, interest: 0, minimumPayment: 10 });
       expect(account.minimumContribution).to.equal(10);
     });
 
@@ -86,14 +86,14 @@ describe('LoanAccount', () => {
     });
 
     it('is the principal plus interest when the minimum payment is higher than both', () => {
-      const account = createAccount({ principal: 20, interest: 10, minimumPayment: 70 });
+      const account = createAccount({ principal: -20, interest: -10, minimumPayment: 70 });
       expect(account.minimumContribution).to.equal(30);
     });
   });
 
   describe('.maximumContribution', () => {
-    it('is the principal plus interest', () => {
-      const account = createAccount({ principal: 20, interest: 10 });
+    it('is the principal plus interest, inversed', () => {
+      const account = createAccount({ principal: -20, interest: -10 });
       expect(account.maximumContribution).to.equal(30);
     });
   });
