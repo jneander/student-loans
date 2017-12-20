@@ -1,6 +1,8 @@
 import Day from 'units/Day';
 import DayRange from 'units/DayRange';
 
+import { INTEREST } from './Event';
+
 class AccountState {
   constructor (account) {
     this._account = account;
@@ -18,6 +20,7 @@ class AccountState {
 class AccountHistoryRecord {
   constructor (account) {
     this.accountState = new AccountState(account);
+    this.events = [];
   }
 }
 
@@ -28,6 +31,10 @@ class HistoryRecords {
 
   setAccountRecord (account) {
     this._accountMap[account.key] = new AccountHistoryRecord(account.clone());
+  }
+
+  addEvent (event) {
+    this._accountMap[event.accountKey].events.push(event);
   }
 
   forAccount (accountKey) {
@@ -91,6 +98,7 @@ export default class Projection {
         }
         account.updateDate = date;
         records.setAccountRecord(account);
+        records.addEvent({ accountKey: account.key, amount: interest, type: INTEREST });
         date = date.offsetDay(1);
       }
     };

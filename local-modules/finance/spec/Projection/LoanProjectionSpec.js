@@ -3,6 +3,7 @@ import sinon from 'sinon';
 import LoanAccount from 'finance/lib/accounts/LoanAccount';
 import Cycle from 'finance/lib/Cycle';
 import Budget from 'finance/lib/Budget';
+import { INTEREST } from 'finance/lib/Projection/Event';
 import Projection from 'finance/lib/Projection';
 import Day from 'units/Day';
 import DayRange from 'units/DayRange';
@@ -170,6 +171,64 @@ describe('Projection', () => {
       const history = await runProjection();
       const record = getAccountRecord(history, 'example-1', new Day('2000/01/16'));
       expect(record.accountState.interest.toFixed(2)).to.equal('0.03');
+    });
+  });
+
+  describe('interest events', () => {
+    beforeEach(() => {
+      projectionOptions.accounts = [
+        new LoanAccount({
+          apr: 0.01,
+          interest: 0,
+          key: 'example-1',
+          nextPaymentDate: '2000/01/15',
+          minimumPayment: 10,
+          monthlyPaymentDay: 1,
+          principal: 1000,
+          updateDate: '2000/01/01'
+        }),
+        new LoanAccount({
+          apr: 0.02,
+          interest: 0,
+          key: 'example-2',
+          nextPaymentDate: '2000/01/15',
+          minimumPayment: 20,
+          monthlyPaymentDay: 1,
+          principal: 1000,
+          updateDate: '2000/01/01'
+        })
+      ];
+      projectionOptions.budget = new Budget({ balance: 100, refreshAmount: 100 });
+    });
+
+    it('does not have an interest event on the initial account update date', async () => {
+      const history = await runProjection();
+      const record = getAccountRecord(history, 'example-1', new Day('2000/01/01'));
+      expect(record.events).to.have.lengthOf(0);
+    });
+
+    it('adds an event on dates where interest is accrued', async () => {
+      const history = await runProjection();
+      const record = getAccountRecord(history, 'example-1', new Day('2000/01/02'));
+      expect(record.events).to.have.lengthOf(1);
+    });
+
+    it('includes the account key with the interest event', async () => {
+      const history = await runProjection();
+      const record = getAccountRecord(history, 'example-1', new Day('2000/01/02'));
+      expect(record.events[0].accountKey).to.equal('example-1');
+    });
+
+    it('includes the amount of interest accrued with the interest event', async () => {
+      const history = await runProjection();
+      const record = getAccountRecord(history, 'example-1', new Day('2000/01/02'));
+      expect(record.events[0].type).to.equal(INTEREST);
+    });
+
+    it('includes the amount of interest accrued with the interest event', async () => {
+      const history = await runProjection();
+      const record = getAccountRecord(history, 'example-1', new Day('2000/01/02'));
+      expect(record.events[0].amount.toFixed(2)).to.equal('-0.03');
     });
   });
 
