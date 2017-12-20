@@ -42,10 +42,13 @@ export default class LoanAccount extends Account {
   }
 
   adjustBalance (amount) {
-    const interestAmount = Math.min(-this._attr.interest, amount);
-    this._attr.interest += interestAmount;
-    const remainder = amount - interestAmount;
-    this._attr.principal += Math.min(-this._attr.principal, remainder);
+    const interest = Math.min(-this._attr.interest, amount);
+    this._attr.interest += interest;
+
+    const principal = Math.min(-this._attr.principal, amount - interest);
+    this._attr.principal += principal;
+
+    return { interest, principal };
   }
 
   adjustPrincipal (amount) {

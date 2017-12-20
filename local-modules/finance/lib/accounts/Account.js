@@ -25,6 +25,10 @@ export default class Account {
     this._attr.balance += amount;
   }
 
+  get maximumContribution () {
+    return Infinity;
+  }
+
   set updateDate (date) {
     this._attr.updateDate = Day.from(date);
   }
