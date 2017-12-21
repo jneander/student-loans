@@ -1,5 +1,6 @@
 import Day from 'units/Day';
 import DayRange from 'units/DayRange';
+import BoundedLoop from 'utils/lib/BoundedLoop';
 
 import { CONTRIBUTION, INTEREST } from './Event';
 
@@ -60,6 +61,16 @@ class HistoryRecords {
     }, []);
   }
 
+  get state () {
+    return Object.keys(this._accountMap).reduce((state, accountKey) => {
+      const accountRecord = this._accountMap[accountKey];
+      if (accountRecord) {
+        state[accountKey] = accountRecord.accountState;
+      }
+      return state;
+    }, {});
+  }
+
   forAccount (accountKey) {
     return this._accountMap[accountKey];
   }
@@ -78,6 +89,16 @@ class History {
 
   getRecordsOnDate (date) {
     return this._data.recordsByDate[date.toString()];
+  }
+
+  getStateOnDate (date) {
+    const records = this._data.recordsByDate[date.toString()];
+    return records ? records.state : {};
+  }
+
+  getEventsOnDate (date) {
+    const records = this._data.recordsByDate[date.toString()];
+    return records ? records.events : [];
   }
 
   // setAccountRecord (date, account) {
@@ -106,6 +127,9 @@ export default class Projection {
   // significant dates in cycle
 
   async run () {
+    let resolve;
+    let boundedLoop;
+
     const { accounts, budget } = this._options;
 
     let cycle = this._options.cycle;
@@ -139,7 +163,7 @@ export default class Projection {
       this._history.initRecordsForDate(historyDates[i]);
     }
 
-    while (cycle.endDate.isOnOrBefore(endDate)) {
+    const loopFn = () => {
       const dates = cycle.dates;
 
       for (let i = 0; i < dates.length; i++) {
@@ -215,9 +239,20 @@ export default class Projection {
       }
 
       cycle = cycle.nextCycle;
-      budget.reload();
+
+      if (cycle.endDate.isOnOrBefore(endDate)) {
+        budget.reload();
+      } else {
+        boundedLoop.stop();
+        resolve();
+      }
     }
 
-    return Promise.resolve(this._history);
+    boundedLoop = new BoundedLoop({ loopFn });
+
+    return new Promise((_resolve) => {
+      resolve = _resolve;
+      boundedLoop.start();
+    });
   }
 }
