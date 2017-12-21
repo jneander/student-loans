@@ -2,120 +2,9 @@ import Day from 'units/Day';
 import DayRange from 'units/DayRange';
 import BoundedLoop from 'utils/lib/BoundedLoop';
 
+import History from '../History';
+
 import { CONTRIBUTION, INTEREST } from './Event';
-
-class AccountState {
-  constructor (account) {
-    this._account = account;
-  }
-
-  get interest () {
-    return this._account.interest;
-  }
-
-  get principal () {
-    return this._account.principal;
-  }
-}
-
-class AccountHistoryRecord {
-  constructor (account) {
-    this.accountState = new AccountState(account);
-    this.events = [];
-  }
-
-  updateAccountState (account) {
-    this.accountState = new AccountState(account);
-  }
-
-  addEvent (event) {
-    this.events.push(event);
-  }
-}
-
-class HistoryRecords {
-  constructor (date) {
-    this.date = date;
-    this._accountMap = {};
-  }
-
-  setAccountRecord (account) {
-    if (this._accountMap[account.key]) {
-      this._accountMap[account.key].updateAccountState(account.clone());
-    } else {
-      this._accountMap[account.key] = new AccountHistoryRecord(account.clone());
-    }
-  }
-
-  addEvent (event) {
-    this._accountMap[event.accountKey].addEvent(event);
-  }
-
-  get events () {
-    return Object.keys(this._accountMap).reduce((events, accountKey) => {
-      const accountRecord = this._accountMap[accountKey];
-      if (accountRecord) {
-        return events.concat(accountRecord.events);
-      }
-      return events;
-    }, []);
-  }
-
-  get state () {
-    return Object.keys(this._accountMap).reduce((state, accountKey) => {
-      const accountRecord = this._accountMap[accountKey];
-      if (accountRecord) {
-        state[accountKey] = accountRecord.accountState;
-      }
-      return state;
-    }, {});
-  }
-
-  forAccount (accountKey) {
-    return this._accountMap[accountKey];
-  }
-}
-
-class History {
-  constructor () {
-    this._data = {
-      recordsByDate: {}
-    };
-  }
-
-  initRecordsForDate (date) {
-    return this._data.recordsByDate[date.toString()] = new HistoryRecords(date);
-  }
-
-  getRecordsOnDate (date) {
-    return this._data.recordsByDate[date.toString()];
-  }
-
-  getStateOnDate (date) {
-    const records = this._data.recordsByDate[date.toString()];
-    return records ? records.state : {};
-  }
-
-  getEventsOnDate (date) {
-    const records = this._data.recordsByDate[date.toString()];
-    return records ? records.events : [];
-  }
-
-  // setAccountRecord (date, account) {
-  //   let records = this._data.recordsByDate[date.toString()];
-  //   if (!records) {
-  //     records = this._data.recordsByDate[date.toString()] = new HistoryRecords();
-  //   }
-  //   records.setAccountRecord(account);
-  // }
-
-  // getAccountRecord (date, accountKey) {
-  //   const records = this._data.recordsByDate[date.toString()];
-  //   if (records) {
-  //     return records.forAccount(accountKey);
-  //   }
-  // }
-}
 
 export default class Projection {
   constructor (options = {}) {
@@ -138,18 +27,15 @@ export default class Projection {
     const applyInterestForDates = (account, startDate, endDate) => {
       let date = startDate;
       while (date.isOnOrBefore(endDate)) {
-        const records = this._history.getRecordsOnDate(date);
         const interest = account.dailyInterest;
         if (interest) {
           account.adjustBalance(interest);
         }
         account.updateDate = date;
-        if (!records) {
-          debugger
-        }
-        records.setAccountRecord(account);
+        this._history.updateState(account, date);
         if (interest) {
-          records.addEvent({ accountKey: account.key, amount: interest, type: INTEREST });
+          const event = { accountKey: account.key, amount: interest, type: INTEREST };
+          this._history.addEvent(event, date);
         }
         date = date.offsetDay(1);
       }
@@ -171,8 +57,7 @@ export default class Projection {
       }
 
       for (let i = 0; i < accounts.length; i++) {
-        const records = this._history.getRecordsOnDate(accounts[i].updateDate);
-        records.setAccountRecord(accounts[i]);
+        this._history.updateState(accounts[i], accounts[i].updateDate);
         accounts[i].updateDate = accounts[i].updateDate.offsetDay(1);
       }
 
@@ -219,11 +104,11 @@ export default class Projection {
       // set records from payments
       // this will take place on the account's current update date
       for (let i = 0; i < accounts.length; i++) {
-        if (accounts[i].nextContributionDate) {
-          const records = this._history.getRecordsOnDate(accounts[i].updateDate);
-          records.setAccountRecord(accounts[i]);
-          if (contributionEvents[accounts[i].key]) {
-            records.addEvent(contributionEvents[accounts[i].key]);
+        const account = accounts[i];
+        if (account.nextContributionDate) {
+          this._history.updateState(account, account.updateDate);
+          if (contributionEvents[account.key]) {
+            this._history.addEvent(contributionEvents[account.key], account.updateDate);
           }
         }
       }
