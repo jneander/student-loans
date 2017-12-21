@@ -1,4 +1,3 @@
-import { Projection } from 'finance';
 import { thisMonth } from 'units/Dates';
 
 import { set } from 'redux-helpers/AccessorHelper';

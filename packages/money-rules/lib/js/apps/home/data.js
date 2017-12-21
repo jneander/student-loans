@@ -10,10 +10,10 @@ export const accountData = [
     monthlyDueDate: 28,
     monthlyPaymentDate: 28,
     name: 'Chase (Fall 2005)',
-    originalPrincipal: 7446.02,
+    originalPrincipal: -7446.02,
     originationDate: '2005/10/24',
     payoffDate: '2031/03/28',
-    principal: 8658.35,
+    principal: -8658.35,
     updateDate: '2017/11/28'
   },
 
@@ -28,10 +28,10 @@ export const accountData = [
     monthlyDueDate: 28,
     monthlyPaymentDate: 8,
     name: 'Mohela 1 Direct Sub Stafford',
-    originalPrincipal: 2431.00,
+    originalPrincipal: -2431.00,
     originationDate: '2006/06/26',
     payoffDate: '2027/06/28',
-    principal: 2061.95,
+    principal: -2061.95,
     updateDate: '2017/12/07'
   },
 
@@ -46,10 +46,10 @@ export const accountData = [
     monthlyDueDate: 28,
     monthlyPaymentDate: 8,
     name: 'Mohela 3 Direct Unsubsidized',
-    originalPrincipal: 1233.83,
+    originalPrincipal: -1233.83,
     originationDate: '2006/06/26',
     payoffDate: '2027/06/28',
-    principal: 1083.15,
+    principal: -1083.15,
     updateDate: '2017/12/07'
   },
 
@@ -64,10 +64,10 @@ export const accountData = [
     monthlyDueDate: 28,
     monthlyPaymentDate: 8,
     name: 'Mohela 5 Direct Unsubsidized',
-    originalPrincipal: 5963.34,
+    originalPrincipal: -5963.34,
     originationDate: '2007/08/27',
     payoffDate: '2027/06/28',
-    principal: 6987.45,
+    principal: -6987.45,
     updateDate: '2017/12/07'
   },
 
@@ -82,10 +82,10 @@ export const accountData = [
     monthlyDueDate: 1,
     monthlyPaymentDate: 1,
     name: 'Earnest Consolidation Loan',
-    originalPrincipal: 95539.12,
+    originalPrincipal: -95539.12,
     originationDate: '2027/11/14',
     payoffDate: '2015/10/20',
-    principal: 78511.60,
+    principal: -78511.60,
     updateDate: '2017/12/01'
   }
 ];

@@ -50,6 +50,16 @@ class HistoryRecords {
     this._accountMap[event.accountKey].addEvent(event);
   }
 
+  get events () {
+    return Object.keys(this._accountMap).reduce((events, accountKey) => {
+      const accountRecord = this._accountMap[accountKey];
+      if (accountRecord) {
+        return events.concat(accountRecord.events);
+      }
+      return events;
+    }, []);
+  }
+
   forAccount (accountKey) {
     return this._accountMap[accountKey];
   }
@@ -110,6 +120,9 @@ export default class Projection {
           account.adjustBalance(interest);
         }
         account.updateDate = date;
+        if (!records) {
+          debugger
+        }
         records.setAccountRecord(account);
         if (interest) {
           records.addEvent({ accountKey: account.key, amount: interest, type: INTEREST });
@@ -143,7 +156,8 @@ export default class Projection {
       for (let i = 0; i < accounts.length; i++) {
         if (accounts[i].nextContributionDate) {
           const startDate = accounts[i].updateDate;
-          applyInterestForDates(accounts[i], startDate, accounts[i].nextContributionDate);
+          const endDate = Day.earliest(accounts[i].nextContributionDate, dates[dates.length - 1]);
+          applyInterestForDates(accounts[i], startDate, endDate);
         }
       }
 
