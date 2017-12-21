@@ -47,7 +47,7 @@ class Visualization extends React.Component {
 
         <TabPanel title="Chart">
           <Chart
-            chartType="AreaChart"
+            chartType="SteppedAreaChart"
             columns={this.state.columns}
             rows={this.state.rows}
             options={{
