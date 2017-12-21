@@ -17,7 +17,7 @@ export default class Day {
 
   constructor (date) {
     if (date instanceof Day) {
-      this._date = date._date;
+      this._date = date._date ? new Date(date._date.getTime()) : null;
     } else {
       this._date = date instanceof Date ? date : new Date(date);
     }

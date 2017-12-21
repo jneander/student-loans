@@ -172,6 +172,13 @@ describe('Projection', () => {
       const record = getAccountRecord(history, 'example-1', new Day('2000/01/16'));
       expect(record.accountState.interest.toFixed(2)).to.equal('-0.03');
     });
+
+    it('accrues interest for only dates in the cycle when the next contribution date is after the cycle', async () => {
+      projectionOptions.accounts[0].nextPaymentDate = '2000/02/01';
+      const history = await runProjection();
+      const records = history.getRecordsOnDate(new Day('2000/02/01'));
+      expect(records).not.to.exist;
+    });
   });
 
   describe('interest events', () => {
