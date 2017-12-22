@@ -4,16 +4,22 @@ import Month from './Month';
 export default class Day {
   static earliest (...dates) {
     return dates.reduce((earliest, date) => date.isBefore(earliest) ? date : earliest, dates[0]);
-  };
+  }
 
   static from (date) {
     return date != null ? new Day(date) : null;
-  };
+  }
 
   static today () {
     const today = new Date();
     return new Day(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
-  };
+  }
+
+  static toString (date) {
+    const month = `${date.getMonth() + 1}`.padStart(2, '0');
+    const day = `${date.getDate()}`.padStart(2, '0');
+    return `${date.getFullYear()}/${month}/${day}`;
+  }
 
   constructor (date) {
     if (date instanceof Day) {
@@ -40,9 +46,7 @@ export default class Day {
   }
 
   toString () {
-    const month = `${this._date.getMonth() + 1}`.padStart(2, '0');
-    const day = `${this._date.getDate()}`.padStart(2, '0');
-    return `${this._date.getFullYear()}/${month}/${day}`;
+    return Day.toString(this._date);
   }
 
   toJSON () {

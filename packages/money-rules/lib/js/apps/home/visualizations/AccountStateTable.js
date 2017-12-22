@@ -3,10 +3,8 @@ import ScreenReaderContent from '@instructure/ui-core/lib/components/ScreenReade
 import Table from '@instructure/ui-core/lib/components/Table';
 import TabList, { TabPanel } from '@instructure/ui-core/lib/components/TabList';
 
-import Day from 'units/Day';
-
-function ColumnHeader ({ column }) {
-  return <th scope="col">{ column.label }</th>
+function ColumnHeader (props) {
+  return <th scope="col">{ props.label }</th>
 }
 
 function Cell (props) {
@@ -14,7 +12,7 @@ function Cell (props) {
 }
 
 function Row (props) {
-  const date = Day.toString(props.cells[0]);
+  const date = props.cells[0].toString();
   return (
     <tr key={date}>
       <th scope="row" key="date">{ date }</th>
@@ -27,7 +25,7 @@ function Row (props) {
   );
 }
 
-export default class ProjectionTable extends React.PureComponent {
+export default class AccountStateTable extends React.PureComponent {
   render () {
     return (
       <Table
