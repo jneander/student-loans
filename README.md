@@ -18,3 +18,6 @@ TODO
   * account reconciliation
   * budget updated
   * strategy updated
+* snapshots
+  * money state at date in time
+  * state of projection and other configuration

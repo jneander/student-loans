@@ -3,12 +3,15 @@ import DayRange from 'units/DayRange';
 import BoundedLoop from 'utils/lib/BoundedLoop';
 
 import History from '../History';
+import Strategy from '../Strategy';
 
 import { CONTRIBUTION, INTEREST } from './Event';
 
 export default class Projection {
   constructor (options = {}) {
     this._options = { ...options };
+
+    this._options.strategy = this._options.strategy || new Strategy();
 
     this._history = new History();
     this._state = 'idle';
@@ -36,7 +39,8 @@ export default class Projection {
     let resolve;
     let boundedLoop;
 
-    const { accounts, budget } = this._options;
+    let { accounts } = this._options;
+    const { budget, strategy } = this._options;
 
     let cycle = this._options.cycle;
     const endDate = new Day(this._options.endDate);
@@ -72,6 +76,7 @@ export default class Projection {
         return;
       }
 
+      accounts = strategy.prioritizeAccounts(accounts);
       const dates = cycle.dates;
 
       for (let i = 0; i < dates.length; i++) {
