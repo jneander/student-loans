@@ -11,9 +11,26 @@ export default class Projection {
     this._options = { ...options };
 
     this._history = new History();
+    this._state = 'idle';
   }
 
-  // significant dates in cycle
+  get aborted () {
+    return this._state === 'aborted';
+  }
+
+  get finished () {
+    return this._state === 'finished';
+  }
+
+  get started () {
+    return this._state === 'started';
+  }
+
+  abort () {
+    if (!this.finished) {
+      this._state = 'aborted';
+    }
+  }
 
   async run () {
     let resolve;
@@ -50,6 +67,11 @@ export default class Projection {
     }
 
     const loopFn = () => {
+      if (this.aborted) {
+        boundedLoop.stop();
+        return;
+      }
+
       const dates = cycle.dates;
 
       for (let i = 0; i < dates.length; i++) {
@@ -129,6 +151,7 @@ export default class Projection {
         budget.reload();
       } else {
         boundedLoop.stop();
+        this._state = 'finished';
         resolve();
       }
     }
@@ -137,6 +160,7 @@ export default class Projection {
 
     return new Promise((_resolve) => {
       resolve = _resolve;
+      this._state = 'started';
       boundedLoop.start();
     });
   }
