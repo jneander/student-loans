@@ -2,40 +2,26 @@ import Day from 'units/Day';
 import DayRange from 'units/DayRange';
 import BoundedLoop from 'utils/lib/BoundedLoop';
 
-import HistoryRecord from './HistoryRecord';
+import DateRecord from './DateRecord';
 
 export default class History {
   constructor () {
-    this._data = {
-      recordsByDate: {}
-    };
+    this._data = {};
   }
 
   initRecordsForDate (date) {
-    return this._data.recordsByDate[date.toString()] = new HistoryRecord(date);
+    return this._data[date.toString()] = new DateRecord();
   }
 
-  getRecordsOnDate (date) {
-    return this._data.recordsByDate[date.toString()];
+  forDate (date) {
+    return this._data[date.toString()] = this._data[date.toString()] || new DateRecord();
   }
 
   updateState (account, date) {
-    const records = this._data.recordsByDate[date.toString()]
-    records.setAccountRecord(account);
+    this.forDate(date).setAccountState(account);
   }
 
   addEvent (event, date) {
-    const records = this._data.recordsByDate[date.toString()]
-    records.addEvent(event);
-  }
-
-  getStateOnDate (date) {
-    const records = this._data.recordsByDate[date.toString()];
-    return records ? records.state : {};
-  }
-
-  getEventsOnDate (date) {
-    const records = this._data.recordsByDate[date.toString()];
-    return records ? records.events : [];
+    this.forDate(date).addEvent(event);
   }
 }
