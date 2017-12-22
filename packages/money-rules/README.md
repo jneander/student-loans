@@ -1,7 +1,19 @@
 # money-rules
 Money Rules
 
-| branch | build status |
-| ------ | ------------ |
-| master | [![Codeship Status for jneander/money-rules](https://app.codeship.com/projects/57c48ef0-8297-0135-3c24-4a09ea28627a/status?branch=master)](https://app.codeship.com/projects/247225) |
-| staging | [![Codeship Status for jneander/money-rules](https://app.codeship.com/projects/57c48ef0-8297-0135-3c24-4a09ea28627a/status?branch=staging)](https://app.codeship.com/projects/247225) |
+TODO
+* charts
+  * total interest accrued
+  * total contributions
+  * net worth
+* strategy
+* change events
+  * account opened
+  * account closed
+  * account updated
+  * account transfer
+  * account deposit
+  * account withdrawal
+  * account reconciliation
+  * budget updated
+  * strategy updated
