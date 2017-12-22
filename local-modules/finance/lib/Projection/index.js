@@ -98,16 +98,19 @@ export default class Projection {
       // this will take place on the account's current update date
       for (let i = 0; i < accounts.length; i++) {
         const account = accounts[i];
-        let amount = budget.take(account.minimumContribution);
-        const { principal, interest } = account.adjustBalance(amount);
 
-        if (amount) {
-          contributionEvents[account.key] = {
-            accountKey: accounts[i].key,
-            interest,
-            principal,
-            type: CONTRIBUTION
-          };
+        if (cycle.endDate.isOnOrAfter(account.nextContributionDate)) {
+          let amount = budget.take(account.minimumContribution);
+          const { principal, interest } = account.adjustBalance(amount);
+
+          if (amount) {
+            contributionEvents[account.key] = {
+              accountKey: accounts[i].key,
+              interest,
+              principal,
+              type: CONTRIBUTION
+            };
+          }
         }
       }
 
@@ -115,11 +118,14 @@ export default class Projection {
       // this will take place on the account's current update date
       for (let i = 0; i < accounts.length; i++) {
         const account = accounts[i];
-        let amount = budget.take(account.maximumContribution);
-        const { principal, interest } = account.adjustBalance(amount);
-        if (amount && contributionEvents[account.key]) {
-          contributionEvents[account.key].principal += principal;
-          contributionEvents[account.key].interest += interest;
+
+        if (cycle.endDate.isOnOrAfter(account.nextContributionDate)) {
+          let amount = budget.take(account.maximumContribution);
+          const { principal, interest } = account.adjustBalance(amount);
+          if (amount && contributionEvents[account.key]) {
+            contributionEvents[account.key].principal += principal;
+            contributionEvents[account.key].interest += interest;
+          }
         }
       }
 
@@ -127,7 +133,7 @@ export default class Projection {
       // this will take place on the account's current update date
       for (let i = 0; i < accounts.length; i++) {
         const account = accounts[i];
-        if (account.nextContributionDate) {
+        if (cycle.endDate.isOnOrAfter(account.nextContributionDate)) {
           this._history.updateState(account, account.updateDate);
           if (contributionEvents[account.key]) {
             this._history.addEvent(contributionEvents[account.key], account.updateDate);
@@ -140,7 +146,7 @@ export default class Projection {
         const startDate = accounts[i].nextContributionDate ? accounts[i].nextContributionDate.offsetDay(1) : dates[0];
         applyInterestForDates(accounts[i], startDate, dates[dates.length - 1]);
 
-        if (accounts[i].nextContributionDate) {
+        if (cycle.endDate.isOnOrAfter(accounts[i].nextContributionDate)) {
           accounts[i].nextContributionDate = accounts[i].nextContributionDate.offsetMonth(1);
         }
       }

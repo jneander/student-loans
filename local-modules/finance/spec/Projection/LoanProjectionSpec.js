@@ -370,6 +370,21 @@ describe('Projection', () => {
       expect(state['example-2'].principal).to.equal(-1000);
     });
 
+    // TODO: this must happen when there is extra budget and the account has higher priority
+    // it('does not apply a contribution without a next contribution date', async () => {
+    //   projectionOptions.accounts[0].nextContributionDate = null;
+    //   await runProjection();
+    //   const state = getStateOnDate(new Day('2000/01/31'));
+    //   expect(state['example-1'].principal).to.equal(-1000);
+    // });
+
+    it('does not apply a contribution in the current cycle when next contribution date is after the cycle', async () => {
+      projectionOptions.accounts[0].nextContributionDate = '2000/02/01';
+      await runProjection();
+      const state = getStateOnDate(new Day('2000/01/31'));
+      expect(state['example-1'].principal).to.equal(-1000);
+    });
+
     context('with interest', () => {
       beforeEach(() => {
         projectionOptions.accounts[0].apr = 0.01;
@@ -404,6 +419,13 @@ describe('Projection', () => {
         await runProjection();
         const state = getStateOnDate(new Day('2000/02/15'));
         expect(state['example-1'].principal).to.equal(-840);
+      });
+
+      it('applies the next contribution in the next cycle when next contribution date is after the current cycle', async () => {
+        projectionOptions.accounts[0].nextContributionDate = '2000/02/01';
+        await runProjection();
+        const state = getStateOnDate(new Day('2000/02/15'));
+        expect(state['example-1'].principal).to.equal(-920);
       });
     });
   });
