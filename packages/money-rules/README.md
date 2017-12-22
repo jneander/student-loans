@@ -6,6 +6,7 @@ TODO
   * total interest accrued
   * total contributions
   * net worth
+* summary
 * strategy
 * change events
   * account opened
