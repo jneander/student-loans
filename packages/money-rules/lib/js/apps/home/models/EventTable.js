@@ -1,8 +1,19 @@
 import { CONTRIBUTION, INTEREST } from 'finance/lib/Projection/Event';
 import { range } from 'units/Dates';
 
-function createTableEvent () {
+function createTableEvent (date, event, state) {
+  const accountState = state[event.accountKey];
 
+  return [
+    date.toString(),
+    accountState.principal.toFixed(2),
+    event.accountKey,
+    event.type.toString(),
+    (event.principal + event.interest).toFixed(2),
+    event.principal.toFixed(2),
+    event.interest.toFixed(2),
+    0
+  ];
 }
 
 export default class EventTable {
@@ -30,18 +41,12 @@ export default class EventTable {
 
     for (let i = 0; i < dateRange.length; i++) {
       const currentDate = dateRange[i];
-      const historyRecords = this.projection._history.getRecordsOnDate(currentDate);
+      const { events, state } = this.projection._history.forDate(currentDate);
 
-      if (historyRecords && historyRecords.events.some(event => event.type === CONTRIBUTION)) {
-        const accountColumns = this.options.accounts.map((account) => {
-          const accountState = historyRecords.forAccount(account.key);
-          return -accountState.accountState.principal;
-        });
+      const contributions = events.filter(event => event.type === CONTRIBUTION);
 
-        rows.push([
-          currentDate.date(),
-          ...accountColumns
-        ]);
+      for (let j = 0; j < contributions.length; j++) {
+        rows.push(createTableEvent(currentDate, contributions[j], state));
       }
     }
 
