@@ -52,4 +52,8 @@ export default class Cycle {
       return new DayRange(this.startDate, this.endDate).dates;
     });
   }
+
+  includes (date) {
+    return this.startDate.isOnOrBefore(date) && this.endDate.isOnOrAfter(date);
+  }
 }

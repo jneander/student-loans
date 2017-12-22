@@ -1,4 +1,5 @@
 import Cycle from 'finance/lib/Cycle';
+import Day from 'units/Day';
 
 describe('Cycle', () => {
   describe('.create()', () => {
@@ -63,6 +64,34 @@ describe('Cycle', () => {
       const cycle = new Cycle({ startDate: '2000/01/05' });
       const expectedDates = dateRange('2000/01', 5, 31).concat(dateRange('2000/02', 1, 4));
       expect(cycle.dates.map(date => date.toString())).to.deep.equal(expectedDates);
+    });
+  });
+
+  describe('.includes()', () => {
+    const cycle = new Cycle({ startDate: '2000/01/05' });
+
+    it('returns true when the given date is on the cycle start date', () => {
+      expect(cycle.includes(new Day('2000/01/05'))).to.be.true;
+    });
+
+    it('returns true when the given date is between the cycle start and end dates', () => {
+      expect(cycle.includes(new Day('2000/01/15'))).to.be.true;
+    });
+
+    it('returns true when the given date is on the cycle end date', () => {
+      expect(cycle.includes(new Day('2000/02/04'))).to.be.true;
+    });
+
+    it('returns false when the given date is before the cycle start date', () => {
+      expect(cycle.includes(new Day('2000/01/04'))).to.be.false;
+    });
+
+    it('returns false when the given date is after the cycle end date', () => {
+      expect(cycle.includes(new Day('2000/02/05'))).to.be.false;
+    });
+
+    it('returns false when the given date is not defined', () => {
+      expect(cycle.includes(null)).to.be.false;
     });
   });
 });
