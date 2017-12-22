@@ -35,7 +35,6 @@ describe('Projection', () => {
       endDate: '2000/01/31'
     };
     clock = sinon.useFakeTimers({ now: new Date('2000/01/01'), toFake: ['Date'] });
-    clock.runAll();
   });
 
   afterEach(() => {
