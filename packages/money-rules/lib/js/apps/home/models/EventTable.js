@@ -1,6 +1,11 @@
 import { CONTRIBUTION, INTEREST } from 'finance/lib/Projection/Event';
 import { range } from 'units/Dates';
 
+const EVENT_TYPE_NAMES = {
+  [CONTRIBUTION]: 'Contribution',
+  [INTEREST]: 'Interest'
+};
+
 function createTableEvent (date, event, state) {
   const accountState = state[event.accountKey];
 
@@ -8,7 +13,7 @@ function createTableEvent (date, event, state) {
     date.toString(),
     accountState.principal.toFixed(2),
     event.accountKey,
-    event.type.toString(),
+    EVENT_TYPE_NAMES[event.type],
     (event.principal + event.interest).toFixed(2),
     event.principal.toFixed(2),
     event.interest.toFixed(2),

@@ -5,14 +5,15 @@ import TabList, { TabPanel } from '@instructure/ui-core/lib/components/TabList';
 
 import Day from 'units/Day';
 
-import EventTableModel from '../models/EventTable';
+import EventTableModel from '../../models/EventTable';
+import styles from './styles.css';
 
 function ColumnHeader (props) {
   return <th scope="col">{ props.label }</th>
 }
 
 function Cell (props) {
-  return <td>{ props.cell }</td>
+  return <td><span className={styles[props.column.label]}>{ props.cell }</span></td>
 }
 
 function Row (props) {
@@ -22,7 +23,7 @@ function Row (props) {
       <th scope="row" key="date">{ date }</th>
       {
         props.cells.slice(1).map((cell, index) => (
-          <Cell key={index} cell={cell} />
+          <Cell key={index} cell={cell} column={props.columns[index + 1]} />
         ))
       }
     </tr>
@@ -54,24 +55,22 @@ export default class EventTable extends React.PureComponent {
       <Table
         caption={<ScreenReaderContent>Events</ScreenReaderContent>}
         size="small"
+        striped="rows"
       >
         <thead>
           <tr>
-            <th scope="col">Date</th>
-            <th scope="col">Balance</th>
-            <th scope="col">Account</th>
-            <th scope="col">Type</th>
-            <th scope="col">Total</th>
-            <th scope="col">Principal</th>
-            <th scope="col">Interest</th>
-            <th scope="col">Other</th>
+            {
+              this.state.columns.map((column) => (
+                <th key={column.label} scope="col">{ column.label }</th>
+              ))
+            }
           </tr>
         </thead>
 
         <tbody>
           {
             this.state.rows.map((row, index) => (
-              <Row key={index} cells={row} />
+              <Row key={index} cells={row} columns={this.state.columns} />
             ))
           }
         </tbody>

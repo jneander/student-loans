@@ -1,0 +1,8 @@
+:local(.Balance),
+:local(.Interest),
+:local(.Other),
+:local(.Principal),
+:local(.Total) {
+  display: block;
+  text-align: right;
+}
