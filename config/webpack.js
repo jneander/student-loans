@@ -26,6 +26,7 @@ module.exports = {
           plugins: [
             'react-hot-loader/babel',
             'transform-async-generator-functions',
+            'transform-es2015-classes',
             'transform-export-extensions',
             'transform-object-rest-spread'
           ],
