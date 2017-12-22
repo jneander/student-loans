@@ -62,11 +62,11 @@ export default class Day {
   }
 
   isOnOrAfter (day) {
-    return this._date && day._date && this._date >= day._date;
+    return !!(day && this._date && day._date && this._date >= day._date);
   }
 
   isOnOrBefore (day) {
-    return this._date && day._date && this._date <= day._date;
+    return !!(day && this._date && day._date && this._date <= day._date);
   }
 
   equals (day) {

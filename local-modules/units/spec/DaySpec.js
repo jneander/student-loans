@@ -1,6 +1,50 @@
 import Day from 'units/Day';
 
 describe('Day', () => {
+  describe('.isOnOrAfter()', () => {
+    it('returns true when the date is after the given date', () => {
+      const day = new Day('2000/01/01');
+      expect(day.isOnOrAfter(new Day('1999/12/31'))).to.be.true;
+    });
+
+    it('returns true when the date is on the given date', () => {
+      const day = new Day('2000/01/01');
+      expect(day.isOnOrAfter(new Day('2000/01/01'))).to.be.true;
+    });
+
+    it('returns false when the date is on the given date', () => {
+      const day = new Day('2000/01/01');
+      expect(day.isOnOrAfter(new Day('2000/01/02'))).to.be.false;
+    });
+
+    it('returns false when the given date is not defined', () => {
+      const day = new Day('2000/01/01');
+      expect(day.isOnOrAfter()).to.be.false;
+    });
+  });
+
+  describe('.isOnOrBefore()', () => {
+    it('returns true when the date is before the given date', () => {
+      const day = new Day('2000/01/01');
+      expect(day.isOnOrBefore(new Day('2000/01/02'))).to.be.true;
+    });
+
+    it('returns true when the date is on the given date', () => {
+      const day = new Day('2000/01/01');
+      expect(day.isOnOrBefore(new Day('2000/01/01'))).to.be.true;
+    });
+
+    it('returns false when the date is after the given date', () => {
+      const day = new Day('2000/01/01');
+      expect(day.isOnOrBefore(new Day('1999/12/31'))).to.be.false;
+    });
+
+    it('returns false when the given date is not defined', () => {
+      const day = new Day('2000/01/01');
+      expect(day.isOnOrBefore()).to.be.false;
+    });
+  });
+
   describe('.offsetYear', () => {
     it('returns the same day of a future year', () => {
       const day = new Day('2000/01/01');
