@@ -55,7 +55,12 @@ export default class Projection {
         account.updateDate = date;
         this._history.updateState(account, date);
         if (interest) {
-          const event = { accountKey: account.key, amount: interest, type: INTEREST };
+          const event = {
+            accountKey: account.key,
+            amount: interest,
+            date,
+            type: INTEREST
+          };
           this._history.addEvent(event, date);
         }
         date = date.offsetDay(1);
@@ -65,11 +70,6 @@ export default class Projection {
     const historyStartDate = Day.earliest(...accounts.map(account => account.updateDate));
     const historyEndDate = cycle.startDate.offsetDay(-1);
 
-    const historyDates = new DayRange(historyStartDate, historyEndDate).dates;
-    for (let i = 0; i < historyDates.length; i++) {
-      this._history.initRecordsForDate(historyDates[i]);
-    }
-
     const loopFn = () => {
       if (this.aborted) {
         boundedLoop.stop();
@@ -78,10 +78,6 @@ export default class Projection {
 
       accounts = strategy.prioritizeAccounts(accounts);
       const dates = cycle.dates;
-
-      for (let i = 0; i < dates.length; i++) {
-        this._history.initRecordsForDate(dates[i]);
-      }
 
       for (let i = 0; i < accounts.length; i++) {
         this._history.updateState(accounts[i], accounts[i].updateDate);
@@ -111,6 +107,7 @@ export default class Projection {
           if (amount) {
             contributionEvents[account.key] = {
               accountKey: accounts[i].key,
+              date: account.nextContributionDate,
               interest,
               principal,
               type: CONTRIBUTION

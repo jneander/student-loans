@@ -79,6 +79,14 @@ export default class LoanAccount extends Account {
     return this._attr.lastPaymentDate;
   }
 
+  set lastContributionDate (date) {
+    this._attr.lastContributionDate = Day.from(date);
+  }
+
+  get lastContributionDate () {
+    return this._attr.lastContributionDate;
+  }
+
   set nextPaymentDate (date) {
     this._attr.nextPaymentDate = Day.from(date);
   }
