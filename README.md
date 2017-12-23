@@ -21,3 +21,5 @@ TODO
 * snapshots
   * money state at date in time
   * state of projection and other configuration
+* optimization
+  * convert projection.run to async generator

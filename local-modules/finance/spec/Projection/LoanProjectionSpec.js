@@ -238,6 +238,12 @@ describe('Projection', () => {
       expect(events[0].accountKey).to.equal('example-1');
     });
 
+    it('includes the date with the interest event', async () => {
+      await runProjection();
+      const events = getAccountEvents('example-1', new Day('2000/01/02'));
+      expect(events[0].date.toString()).to.equal('2000/01/02');
+    });
+
     it('includes the amount of interest accrued with the interest event', async () => {
       await runProjection();
       const events = getAccountEvents('example-1', new Day('2000/01/02'));
@@ -473,6 +479,12 @@ describe('Projection', () => {
       await runProjection();
       const events = getAccountEvents('example-1', new Day('2000/01/15'));
       expect(events[0].accountKey).to.equal('example-1');
+    });
+
+    it('includes the date with the contribution event', async () => {
+      await runProjection();
+      const events = getAccountEvents('example-1', new Day('2000/01/15'));
+      expect(events[0].date.toString()).to.equal('2000/01/15');
     });
 
     it('includes the interest amount of the contribution with the contribution event', async () => {

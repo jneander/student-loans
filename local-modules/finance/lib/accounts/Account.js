@@ -13,6 +13,10 @@ export default class Account {
     return this._attr.key;
   }
 
+  get name () {
+    return this._attr.name;
+  }
+
   get dailyInterest () {
     return 0;
   }
