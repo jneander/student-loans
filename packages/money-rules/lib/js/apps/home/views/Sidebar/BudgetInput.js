@@ -62,13 +62,13 @@ class Controls extends Component {
 
   componentWillReceiveProps (nextProps) {
     this.setState({
-      totalMinimumPayment: this.props.accounts.reduce((sum, account) => sum + account.minimumContribution, 0)
+      totalMinimumPayment: nextProps.accounts.reduce((sum, account) => sum + account.minimumContribution, 0)
     });
   }
 
   render () {
     const messages = [];
-    if (this.props.budget < this.state.totalMinimumPayment) {
+    if (this.props.budget.refreshAmount < this.state.totalMinimumPayment) {
       messages.push({ type: 'error', text: `Total minimum payment is ${this.state.totalMinimumPayment}` });
     }
 
@@ -82,6 +82,7 @@ class Controls extends Component {
           inputRef={this.bindCurrentAmountInput}
           defaultValue={`${this.props.budget.currentAmount}`}
           label="Current Amount"
+          min="0"
           onBlur={this.onCurrentAmountBlur}
           onChange={this.onCurrentAmountChange}
           onKeyDown={this.onCurrentAmountKeyDown}
@@ -93,6 +94,7 @@ class Controls extends Component {
           defaultValue={`${this.props.budget.refreshAmount}`}
           label="Refresh Amount"
           messages={messages}
+          min="0"
           onBlur={this.onRefreshAmountBlur}
           onChange={this.onRefreshAmountChange}
           onKeyDown={this.onRefreshAmountKeyDown}

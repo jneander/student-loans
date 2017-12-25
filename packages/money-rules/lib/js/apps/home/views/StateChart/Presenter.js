@@ -23,7 +23,7 @@ export default class Presenter {
 
       if (dateRecord.events.some(event => event.type === CONTRIBUTION)) {
         const row = {
-          date: currentDate.toString()
+          date: currentDate.date().getTime()
         };
 
         for (let j = 0; j < this.options.accounts.length; j++) {

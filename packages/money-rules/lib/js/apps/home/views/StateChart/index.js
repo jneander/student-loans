@@ -66,16 +66,17 @@ export default class StateChart extends React.PureComponent {
       <div style={{ width: '100%', height: '400px' }}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={this.state.rows} margin={{top: 10, right: 30, left: 0, bottom: 0}}>
-            <XAxis dataKey={getDateFromRow} tickCount={10} tickFormatter={formatDate} />
+            <XAxis dataKey={getDateFromRow} scale="linear" tickCount={10} tickFormatter={formatDate} />
             <YAxis />
 
             <CartesianGrid strokeDasharray="3 3" />
 
-            <Tooltip formatter={formatAmount} />
+            <Tooltip labelFormatter={formatDate} formatter={formatAmount} />
 
             {
               this.state.dataSpecs.map((dataSpec, index) => (
                 <Area
+                  isAnimationActive={false}
                   key={dataSpec.key}
                   dataKey={dataSpec.key}
                   stackId="1"
