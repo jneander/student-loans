@@ -40,7 +40,7 @@ export function projectPlan () {
 
     projection = new Projection({
       accounts: accounts.map(account => account.clone()),//.slice(0, 1),
-      budget: new Budget({ balance: budget, refreshAmount: budget }),
+      budget: new Budget({ balance: budget.currentAmount, refreshAmount: budget.refreshAmount }),
       cycle: new Cycle({ startDate: cycleStartDate, startDay: 1 }),
       endDate,
       strategy

@@ -5,7 +5,10 @@ import { set } from 'redux-helpers/AccessorHelper';
 export function getInitialState () {
   return {
     plan: {
-      budget: 1300, // TODO: start at 0
+      budget: {
+        currentAmount: 100,
+        refreshAmount: 1300, // TODO: start at 0
+      },
       pendingProjection: null,
       projection: null,
       startDate: thisMonth()
