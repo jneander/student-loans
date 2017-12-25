@@ -2,10 +2,10 @@ import React from 'react';
 import ScreenReaderContent from '@instructure/ui-core/lib/components/ScreenReaderContent';
 import Table from '@instructure/ui-core/lib/components/Table';
 
-import SummaryModel from '../../models/Summary';
+import Presenter from './Presenter';
 
 function summarizeAccounts (props) {
-  const summary = new SummaryModel(props.projection, {
+  const summary = new Presenter(props.projection, {
     accounts: props.accounts
   });
 

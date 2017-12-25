@@ -1,4 +1,4 @@
-export default class Summary {
+export default class Presenter {
   constructor (projection, options) {
     this.projection = projection;
     this.options = options;
