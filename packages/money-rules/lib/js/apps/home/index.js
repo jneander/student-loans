@@ -4,10 +4,10 @@ import Container from '@instructure/ui-core/lib/components/Container';
 import Grid, { GridCol, GridRow } from '@instructure/ui-core/lib/components/Grid';
 import Heading from '@instructure/ui-core/lib/components/Heading';
 import Select from '@instructure/ui-core/lib/components/Select';
-import { Chart } from 'react-google-charts';
 
 import AppHarness from 'js/shared/components/AppHarness';
 
+import Sidebar from './views/Sidebar';
 import Visualization from './views/Visualization';
 import Controls from './Controls';
 import EventMachine from './EventMachine';
@@ -35,9 +35,7 @@ export default class Home extends React.Component {
             <Grid>
               <GridRow>
                 <GridCol width="auto">
-                  <div style={{ width: '200px' }}>
-                    <Controls />
-                  </div>
+                  <Sidebar />
                 </GridCol>
 
                 <GridCol>
