@@ -14,6 +14,12 @@ function planChanged (previousState, currentState) {
     changed = previousBudget !== currentBudget;
   }
 
+  if (!changed) {
+    const previousDebtStrategy = PlanAccessor.getDebtStrategy(previousState);
+    const currentDebtStrategy = PlanAccessor.getDebtStrategy(currentState);
+    changed = previousDebtStrategy !== currentDebtStrategy;
+  }
+
   return changed;
 }
 

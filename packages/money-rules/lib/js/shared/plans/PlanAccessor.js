@@ -9,6 +9,7 @@ export function getInitialState () {
         currentAmount: 100,
         refreshAmount: 1300, // TODO: start at 0
       },
+      debtStrategy: 'custom',
       pendingProjection: null,
       projection: null,
       startDate: thisMonth()
@@ -22,6 +23,14 @@ export function setBudget (state, budget) {
 
 export function getBudget (state) {
   return state.plan.budget;
+}
+
+export function setDebtStrategy (state, debtStrategy) {
+  return set(state, 'plan.debtStrategy', debtStrategy);
+}
+
+export function getDebtStrategy (state) {
+  return state.plan.debtStrategy;
 }
 
 export function setStartDate (state, startDate) {
