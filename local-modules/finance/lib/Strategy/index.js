@@ -6,6 +6,6 @@ export default class Strategy {
   }
 
   prioritizeAccounts (accounts) {
-    return DebtPriority.prioritizeAccounts(accounts, this._options.debtPriority);
+    return DebtPriority.prioritizeAccounts([...accounts], this._options.debtPriority);
   }
 }

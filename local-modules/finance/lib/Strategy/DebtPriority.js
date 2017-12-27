@@ -21,7 +21,7 @@ function compareKey (a, b) {
 
 export function prioritizeAccounts (accounts, strategy = 'none') {
   switch (strategy) {
-    case 'optimal': {
+    case 'avalanche': {
       return accounts.sort((a, b) => -compareApr(a, b) || compareBalance(a, b) || compareKey(a, b));
     }
     case 'snowball': {
