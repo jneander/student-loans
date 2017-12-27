@@ -27,6 +27,10 @@ describe('Projection', () => {
     return projection._history.forDate(date).state;
   }
 
+  function getSummaryOnDate (date) {
+    return projection._history.forDate(date).summary;
+  }
+
   beforeEach(() => {
     projectionOptions = {
       accounts: [],
@@ -595,6 +599,42 @@ describe('Projection', () => {
         expect(events[0].principal).to.equal(75);
       });
     });
+  });
+
+  describe('cumulative contribution', () => {
+    beforeEach(() => {
+      projectionOptions.accounts = [
+        new LoanAccount({
+          apr: 0.00,
+          interest: 0,
+          key: 'example-1',
+          nextPaymentDate: '2000/01/15',
+          minimumPayment: 10,
+          monthlyPaymentDay: 1,
+          principal: -1000,
+          updateDate: '2000/01/01'
+        }),
+        new LoanAccount({
+          apr: 0.00,
+          interest: 0,
+          key: 'example-2',
+          nextPaymentDate: '2000/01/15',
+          minimumPayment: 20,
+          monthlyPaymentDay: 1,
+          principal: -1000,
+          updateDate: '2000/01/01'
+        })
+      ];
+      projectionOptions.budget = new Budget({ balance: 100, refreshAmount: 100 });
+    });
+
+    // it includes the initial cumulative values
+
+    // it('does not have a contribution event on days without a contribution', async () => {
+    //   await runProjection();
+    //   const summary = getSummaryOnDate(new Day('2000/01/01'));
+    //   expect(summary['example-1']).to.equal(0);
+    // });
   });
 
   // NO? with a cycle not aligned with calendar months

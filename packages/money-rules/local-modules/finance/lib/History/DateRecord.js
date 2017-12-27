@@ -2,6 +2,7 @@ export default class DateRecord {
   constructor () {
     this._events = [];
     this._state = {};
+    this._summary = {};
   }
 
   setAccountState (account) {
@@ -18,6 +19,10 @@ export default class DateRecord {
 
   get state () {
     return { ...this._state };
+  }
+
+  get summary () {
+    return { ...this._summary };
   }
 
   stateForAccount (accountKey) {

@@ -9,6 +9,7 @@ class AccountSummary {
   constructor (accountKey) {
     this._accountKey = accountKey;
     this._lastContribution = null;
+    this._totalContribution = 0;
   }
 
   addEvent (event) {
@@ -18,7 +19,12 @@ class AccountSummary {
       } else {
         this._lastContribution = event;
       }
+      this._totalContribution += event.principal + event.interest;
     }
+  }
+
+  get totalContribution () {
+    return this._totalContribution;
   }
 
   get lastContributionAmount () {
@@ -54,9 +60,5 @@ export default class History {
   addEvent (event, date) {
     this.forDate(date).addEvent(event);
     this.forAccount(event.accountKey).addEvent(event);
-  }
-
-  getAccountSummary (accountKey) {
-    return this.forAccount(accountKey);
   }
 }
