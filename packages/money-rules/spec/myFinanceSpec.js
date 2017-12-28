@@ -1,6 +1,7 @@
 import LoanAccount from 'finance/lib/accounts/LoanAccount';
 import Cycle from 'finance/lib/Cycle';
 import Budget from 'finance/lib/Budget';
+import Plan from 'finance/lib/Plan';
 import Strategy from 'finance/lib/Strategy';
 import Projection from 'finance/lib/Projection';
 import Day from 'units/Day';
@@ -17,11 +18,11 @@ function dollar (amount) {
 }
 
 describe('Projection', () => {
-  let projectionOptions;
+  let plan;
   let projection;
 
   async function runProjection () {
-    projection = new Projection(projectionOptions);
+    projection = new Projection(plan);
     await projection.run();
   }
 
@@ -40,13 +41,12 @@ describe('Projection', () => {
   beforeEach(() => {
     let accounts = accountData.map(datum => new LoanAccount(datum));
     accounts = new Strategy({ debtPriority: 'avalanche' }).prioritizeAccounts(accounts);
-
-    projectionOptions = {
+    plan = new Plan({
       accounts,
       budget: new Budget({ balance: 91.91, refreshAmount: 1300 }),
       cycle: new Cycle({ startDate: new Day('2017/12/01'), startDay: 1 }),
       endDate: '2040/11/30'
-    };
+    });
   });
 
   describe('account state', () => {

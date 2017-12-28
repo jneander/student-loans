@@ -9,9 +9,7 @@ import { CONTRIBUTION, INTEREST } from './Event';
 
 export default class Projection {
   constructor (options = {}) {
-    this._options = { ...options };
-
-    this._options.strategy = this._options.strategy || new Strategy();
+    this._options = options;
 
     this._history = new History();
     this._state = 'idle';
