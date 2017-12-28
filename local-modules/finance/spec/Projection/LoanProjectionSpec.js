@@ -3,6 +3,7 @@ import sinon from 'sinon';
 import LoanAccount from 'finance/lib/accounts/LoanAccount';
 import Cycle from 'finance/lib/Cycle';
 import Budget from 'finance/lib/Budget';
+import Plan from 'finance/lib/Plan';
 import { CONTRIBUTION, INTEREST } from 'finance/lib/Projection/Event';
 import Projection from 'finance/lib/Projection';
 import Day from 'units/Day';
@@ -10,11 +11,11 @@ import DayRange from 'units/DayRange';
 
 describe('Projection', () => {
   let clock;
-  let projectionOptions;
+  let plan;
   let projection;
 
   async function runProjection () {
-    projection = new Projection(projectionOptions);
+    projection = new Projection(plan);
     await projection.run();
   }
 
@@ -32,12 +33,12 @@ describe('Projection', () => {
   }
 
   beforeEach(() => {
-    projectionOptions = {
+    plan = new Plan({
       accounts: [],
       budget: new Budget({ balance: 100, refreshAmount: 100 }),
       cycle: new Cycle({ startDate: new Day('2000/01/01'), startDay: 1 }),
       endDate: '2000/01/31'
-    };
+    });
     clock = sinon.useFakeTimers({ now: new Date('2000/01/01'), toFake: ['Date'] });
   });
 
@@ -47,7 +48,7 @@ describe('Projection', () => {
 
   describe('account state', () => {
     beforeEach(() => {
-      projectionOptions.accounts = [
+      plan.accounts = [
         new LoanAccount({
           apr: 0.00,
           interest: 0,
@@ -69,7 +70,7 @@ describe('Projection', () => {
           updateDate: '1999/12/31'
         })
       ];
-      projectionOptions.budget = new Budget({ balance: 100, refreshAmount: 100 });
+      plan.budget = new Budget({ balance: 100, refreshAmount: 100 });
     });
 
     it('does not include state before the initial account update date', async () => {
@@ -86,7 +87,7 @@ describe('Projection', () => {
     });
 
     it('includes state from the initial account update date to the start of the first cycle', async () => {
-      projectionOptions.accounts[0].updateDate = '1999/12/25';
+      plan.accounts[0].updateDate = '1999/12/25';
       await runProjection();
       new DayRange('1999/12/25', '1999/12/31').dates.forEach((date) => {
         const state = getStateOnDate(date);
@@ -104,7 +105,7 @@ describe('Projection', () => {
 
     context('when projecting over multiple cycles', () => {
       beforeEach(() => {
-        projectionOptions.endDate = '2000/03/31';
+        plan.endDate = '2000/03/31';
       });
 
       it('includes state up to the given end date', async () => {
@@ -122,7 +123,7 @@ describe('Projection', () => {
 
     context('with no accounts', () => {
       it('has no account state', async () => {
-        projectionOptions.accounts = [];
+        plan.accounts = [];
         await runProjection();
         const state = getStateOnDate(new Day('2000/01/01'));
         expect(state).to.be.empty;
@@ -132,7 +133,7 @@ describe('Projection', () => {
 
   describe('interest', () => {
     beforeEach(() => {
-      projectionOptions.accounts = [
+      plan.accounts = [
         new LoanAccount({
           apr: 0.01,
           interest: 0,
@@ -154,7 +155,7 @@ describe('Projection', () => {
           updateDate: '2000/01/01'
         })
       ];
-      projectionOptions.budget = new Budget({ balance: 100, refreshAmount: 100 });
+      plan.budget = new Budget({ balance: 100, refreshAmount: 100 });
     });
 
     it('does not accrue on the initial account update date', async () => {
@@ -164,7 +165,7 @@ describe('Projection', () => {
     });
 
     it('accrues between the initial account update date and the start of the cycle', async () => {
-      projectionOptions.accounts[0].updateDate = '1999/12/25';
+      plan.accounts[0].updateDate = '1999/12/25';
       await runProjection();
       const state = getStateOnDate(new Day('1999/12/31'));
       expect(state['example-1'].interest.toFixed(2)).to.equal('-0.16');
@@ -183,7 +184,7 @@ describe('Projection', () => {
     });
 
     it('accrues only for dates in the cycle when the next contribution date is after the cycle', async () => {
-      projectionOptions.accounts[0].nextPaymentDate = '2000/02/01';
+      plan.accounts[0].nextPaymentDate = '2000/02/01';
       await runProjection();
       const state = getStateOnDate(new Day('2000/02/01'));
       expect(state).to.be.empty;
@@ -192,7 +193,7 @@ describe('Projection', () => {
 
   describe('interest events', () => {
     beforeEach(() => {
-      projectionOptions.accounts = [
+      plan.accounts = [
         new LoanAccount({
           apr: 0.01,
           interest: 0,
@@ -214,7 +215,7 @@ describe('Projection', () => {
           updateDate: '2000/01/01'
         })
       ];
-      projectionOptions.budget = new Budget({ balance: 100, refreshAmount: 100 });
+      plan.budget = new Budget({ balance: 100, refreshAmount: 100 });
     });
 
     it('adds an event on dates when interest is accrued', async () => {
@@ -230,7 +231,7 @@ describe('Projection', () => {
     });
 
     it('does not have an interest event on dates when no interest is accrued', async () => {
-      projectionOptions.accounts[0].apr = 0;
+      plan.accounts[0].apr = 0;
       await runProjection();
       const events = getAccountEvents('example-1', new Day('2000/01/02'));
       expect(events).to.have.lengthOf(0);
@@ -263,7 +264,7 @@ describe('Projection', () => {
 
   describe('contributions', () => {
     beforeEach(() => {
-      projectionOptions.accounts = [
+      plan.accounts = [
         new LoanAccount({
           apr: 0.00,
           interest: 0,
@@ -285,32 +286,32 @@ describe('Projection', () => {
           updateDate: '2000/01/01'
         })
       ];
-      projectionOptions.budget = new Budget({ balance: 100, refreshAmount: 100 });
+      plan.budget = new Budget({ balance: 100, refreshAmount: 100 });
     });
 
     it('adjusts the principal on the next contribution date', async () => {
-      projectionOptions.accounts[1].minimumPayment = 0;
+      plan.accounts[1].minimumPayment = 0;
       await runProjection();
       const state = getStateOnDate(new Day('2000/01/15'));
       expect(state['example-1'].principal).to.equal(-900);
     });
 
     it('does not adjust the principal before the next contribution date', async () => {
-      projectionOptions.accounts[1].minimumPayment = 0;
+      plan.accounts[1].minimumPayment = 0;
       await runProjection();
       const state = getStateOnDate(new Day('2000/01/14'));
       expect(state['example-1'].principal).to.equal(-1000);
     });
 
     it('adjusts the first account by its minimum contribution', async () => {
-      projectionOptions.accounts[0].minimumPayment = 100;
+      plan.accounts[0].minimumPayment = 100;
       await runProjection();
       const state = getStateOnDate(new Day('2000/01/15'));
       expect(state['example-1'].principal).to.equal(-900);
     });
 
     it('adjusts other accounts by their minimum contributions', async () => {
-      projectionOptions.accounts[1].minimumPayment = 90;
+      plan.accounts[1].minimumPayment = 90;
       await runProjection();
       const state = getStateOnDate(new Day('2000/01/15'));
       expect(state['example-2'].principal).to.equal(-910);
@@ -323,58 +324,58 @@ describe('Projection', () => {
     });
 
     it('adjusts other accounts by their maximum contributions with remaining budget', async () => {
-      projectionOptions.budget = new Budget({ balance: 1100, refreshAmount: 100 });
+      plan.budget = new Budget({ balance: 1100, refreshAmount: 100 });
       await runProjection();
       const state = getStateOnDate(new Day('2000/01/15'));
       expect(state['example-2'].principal).to.equal(-900);
     });
 
     it('reduces the interest before the principal', async () => {
-      projectionOptions.accounts[0].interest = -70;
+      plan.accounts[0].interest = -70;
       await runProjection();
       const state = getStateOnDate(new Day('2000/01/31'));
       expect(state['example-1'].principal).to.equal(-990);
     });
 
     it('reduces the principal to zero when less than the budget amount', async () => {
-      projectionOptions.accounts[0].principal = -79;
+      plan.accounts[0].principal = -79;
       await runProjection();
       const state = getStateOnDate(new Day('2000/01/31'));
       expect(state['example-1'].principal).to.equal(0);
     });
 
     it('reduces the interest to zero when less than the budget amount', async () => {
-      projectionOptions.accounts[0].interest = -79;
+      plan.accounts[0].interest = -79;
       await runProjection();
       const state = getStateOnDate(new Day('2000/01/31'));
       expect(state['example-1'].interest).to.equal(0);
     });
 
     it('does not change the balance without a budget', async () => {
-      projectionOptions.budget = new Budget({ balance: 0, refreshAmount: 0 });
+      plan.budget = new Budget({ balance: 0, refreshAmount: 0 });
       await runProjection();
       const state = getStateOnDate(new Day('2000/01/31'));
       expect(state['example-1'].principal).to.equal(-1000);
     });
 
     it('does not apply contributions in the past', async () => {
-      projectionOptions.accounts[0].nextContributionDate = '1999/12/31';
-      projectionOptions.accounts[0].updateDate = '1999/12/31';
+      plan.accounts[0].nextContributionDate = '1999/12/31';
+      plan.accounts[0].updateDate = '1999/12/31';
       await runProjection();
       const state = getStateOnDate(new Day('1999/12/31'));
       expect(state['example-1'].principal).to.equal(-1000);
     });
 
     it('uses the current date when the the next contribution date is in the past', async () => {
-      projectionOptions.accounts[0].nextContributionDate = '1999/12/31';
-      projectionOptions.accounts[0].updateDate = '1999/12/31';
+      plan.accounts[0].nextContributionDate = '1999/12/31';
+      plan.accounts[0].updateDate = '1999/12/31';
       await runProjection();
       const state = getStateOnDate(new Day('2000/01/01'));
       expect(state['example-1'].principal).to.equal(-920);
     });
 
     it('uses all of the budget on the first account when none have minimum contributions', async () => {
-      projectionOptions.accounts.forEach((account) => account.minimumPayment = 0);
+      plan.accounts.forEach((account) => account.minimumPayment = 0);
       await runProjection();
       const state = getStateOnDate(new Day('2000/01/31'));
       expect(state['example-2'].principal).to.equal(-1000);
@@ -382,14 +383,14 @@ describe('Projection', () => {
 
     // TODO: this must happen when there is extra budget and the account has higher priority
     // it('does not apply a contribution without a next contribution date', async () => {
-    //   projectionOptions.accounts[0].nextContributionDate = null;
+    //   plan.accounts[0].nextContributionDate = null;
     //   await runProjection();
     //   const state = getStateOnDate(new Day('2000/01/31'));
     //   expect(state['example-1'].principal).to.equal(-1000);
     // });
 
     it('does not apply a contribution in the current cycle when next contribution date is after the cycle', async () => {
-      projectionOptions.accounts[0].nextContributionDate = '2000/02/01';
+      plan.accounts[0].nextContributionDate = '2000/02/01';
       await runProjection();
       const state = getStateOnDate(new Day('2000/01/31'));
       expect(state['example-1'].principal).to.equal(-1000);
@@ -397,8 +398,8 @@ describe('Projection', () => {
 
     context('with interest', () => {
       beforeEach(() => {
-        projectionOptions.accounts[0].apr = 0.01;
-        projectionOptions.accounts[1].apr = 0.02;
+        plan.accounts[0].apr = 0.01;
+        plan.accounts[1].apr = 0.02;
       });
 
       it('applies contributions after accruing interest', async () => {
@@ -416,7 +417,7 @@ describe('Projection', () => {
 
     context('when projecting over multiple cycles', () => {
       beforeEach(() => {
-        projectionOptions.endDate = '2000/03/31';
+        plan.endDate = '2000/03/31';
       });
 
       it('refreshes the budget for each cycle', async () => {
@@ -432,7 +433,7 @@ describe('Projection', () => {
       });
 
       it('applies the next contribution in the next cycle when next contribution date is after the current cycle', async () => {
-        projectionOptions.accounts[0].nextContributionDate = '2000/02/01';
+        plan.accounts[0].nextContributionDate = '2000/02/01';
         await runProjection();
         const state = getStateOnDate(new Day('2000/02/15'));
         expect(state['example-1'].principal).to.equal(-920);
@@ -442,7 +443,7 @@ describe('Projection', () => {
 
   describe('contribution events', () => {
     beforeEach(() => {
-      projectionOptions.accounts = [
+      plan.accounts = [
         new LoanAccount({
           apr: 0.00,
           interest: 0,
@@ -464,7 +465,7 @@ describe('Projection', () => {
           updateDate: '2000/01/01'
         })
       ];
-      projectionOptions.budget = new Budget({ balance: 100, refreshAmount: 100 });
+      plan.budget = new Budget({ balance: 100, refreshAmount: 100 });
     });
 
     it('does not have a contribution event on days without a contribution', async () => {
@@ -492,14 +493,14 @@ describe('Projection', () => {
     });
 
     it('includes the interest amount of the contribution with the contribution event', async () => {
-      projectionOptions.accounts[0].interest = -10;
+      plan.accounts[0].interest = -10;
       await runProjection();
       const events = getAccountEvents('example-1', new Day('2000/01/15'));
       expect(events[0].interest).to.equal(10);
     });
 
     it('includes the principal amount of the contribution with the contribution event', async () => {
-      projectionOptions.accounts[0].interest = -10;
+      plan.accounts[0].interest = -10;
       await runProjection();
       const events = getAccountEvents('example-1', new Day('2000/01/15'));
       expect(events[0].principal).to.equal(70);
@@ -512,21 +513,21 @@ describe('Projection', () => {
     });
 
     it('includes both interest and contribution events when both occur on the same date', async () => {
-      projectionOptions.accounts[0].apr = 0.01;
+      plan.accounts[0].apr = 0.01;
       await runProjection();
       const events = getAccountEvents('example-1', new Day('2000/01/15'));
       expect(events).to.have.lengthOf(2);
     });
 
     it('includes interest events before contribution events', async () => {
-      projectionOptions.accounts[0].apr = 0.01;
+      plan.accounts[0].apr = 0.01;
       await runProjection();
       const events = getAccountEvents('example-1', new Day('2000/01/15'));
       expect(events.map(event => event.type)).to.deep.equal([INTEREST, CONTRIBUTION]);
     });
 
     it('does not include a contribution event when the contribution amount is zero', async () => {
-      projectionOptions.accounts[0].minimumPayment = 100;
+      plan.accounts[0].minimumPayment = 100;
       await runProjection();
       const events = getAccountEvents('example-2', new Day('2000/01/15'));
       expect(events).to.be.empty;
@@ -534,16 +535,16 @@ describe('Projection', () => {
 
     context('when the minimum contribution covers less than the accrued interest', () => {
       it('sets the interest to the interest portion of the payment', async () => {
-        projectionOptions.accounts[0].interest = -100;
-        projectionOptions.accounts[1].minimumPayment = 100;
+        plan.accounts[0].interest = -100;
+        plan.accounts[1].minimumPayment = 100;
         await runProjection();
         const events = getAccountEvents('example-1', new Day('2000/01/15'));
         expect(events[0].interest).to.equal(10);
       });
 
       it('sets the principal to zero', async () => {
-        projectionOptions.accounts[0].interest = -100;
-        projectionOptions.accounts[1].minimumPayment = 100;
+        plan.accounts[0].interest = -100;
+        plan.accounts[1].minimumPayment = 100;
         await runProjection();
         const events = getAccountEvents('example-1', new Day('2000/01/15'));
         expect(events[0].principal).to.equal(0);
@@ -552,16 +553,16 @@ describe('Projection', () => {
 
     context('when the minimum contribution covers more than the accrued interest', () => {
       it('sets the interest to the interest portion of the payment', async () => {
-        projectionOptions.accounts[0].interest = -5;
-        projectionOptions.accounts[1].minimumPayment = 100;
+        plan.accounts[0].interest = -5;
+        plan.accounts[1].minimumPayment = 100;
         await runProjection();
         const events = getAccountEvents('example-1', new Day('2000/01/15'));
         expect(events[0].interest).to.equal(5);
       });
 
       it('sets the principal to the remainder of the payment', async () => {
-        projectionOptions.accounts[0].interest = -5;
-        projectionOptions.accounts[1].minimumPayment = 100;
+        plan.accounts[0].interest = -5;
+        plan.accounts[1].minimumPayment = 100;
         await runProjection();
         const events = getAccountEvents('example-1', new Day('2000/01/15'));
         expect(events[0].principal).to.equal(5);
@@ -570,14 +571,14 @@ describe('Projection', () => {
 
     context('when the overall contribution covers less than the accrued interest', () => {
       it('sets the interest to the interest portion of the payment', async () => {
-        projectionOptions.accounts[0].interest = -100;
+        plan.accounts[0].interest = -100;
         await runProjection();
         const events = getAccountEvents('example-1', new Day('2000/01/15'));
         expect(events[0].interest).to.equal(80);
       });
 
       it('sets the principal to zero', async () => {
-        projectionOptions.accounts[0].interest = -100;
+        plan.accounts[0].interest = -100;
         await runProjection();
         const events = getAccountEvents('example-1', new Day('2000/01/15'));
         expect(events[0].principal).to.equal(0);
@@ -586,14 +587,14 @@ describe('Projection', () => {
 
     context('when the overall contribution covers more than the accrued interest', () => {
       it('sets the interest to the interest portion of the payment', async () => {
-        projectionOptions.accounts[0].interest = -5;
+        plan.accounts[0].interest = -5;
         await runProjection();
         const events = getAccountEvents('example-1', new Day('2000/01/15'));
         expect(events[0].interest).to.equal(5);
       });
 
       it('sets the principal to the remainder of the payment', async () => {
-        projectionOptions.accounts[0].interest = -5;
+        plan.accounts[0].interest = -5;
         await runProjection();
         const events = getAccountEvents('example-1', new Day('2000/01/15'));
         expect(events[0].principal).to.equal(75);
@@ -603,7 +604,7 @@ describe('Projection', () => {
 
   describe('cumulative contribution', () => {
     beforeEach(() => {
-      projectionOptions.accounts = [
+      plan.accounts = [
         new LoanAccount({
           apr: 0.00,
           interest: 0,
@@ -625,7 +626,7 @@ describe('Projection', () => {
           updateDate: '2000/01/01'
         })
       ];
-      projectionOptions.budget = new Budget({ balance: 100, refreshAmount: 100 });
+      plan.budget = new Budget({ balance: 100, refreshAmount: 100 });
     });
 
     // it includes the initial cumulative values
