@@ -46,4 +46,8 @@ export default class Plan {
   get strategy () {
     return this._options.strategy;
   }
+
+  get steps () {
+    return [];
+  }
 }
