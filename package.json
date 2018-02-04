@@ -4,6 +4,33 @@
     "node": ">=8.9.4",
     "yarn": ">=1.3.2"
   },
+  "scripts": {
+    "bootstrap": "lerna bootstrap --reject-cycles",
+    "build": "lerna run build --stream --scope",
+    "build:all": "lerna run build --stream",
+    "build:production": "lerna run build:production --stream --scope",
+    "build:production:all": "lerna run build:production --stream",
+    "build:watch": "lerna run build:watch --stream --scope",
+    "clean": "lerna run clean --scope",
+    "clean:all": "lerna run clean --stream",
+    "clean:modules": "lerna clean --yes",
+    "deploy": "lerna run deploy --stream --scope",
+    "deploy:all": "lerna run deploy --stream",
+    "format": "lerna run format --stream --scope",
+    "format:all": "lerna run format --stream",
+    "lint": "lerna run lint --stream --scope",
+    "lint:all": "lerna run lint --stream",
+    "lint:fix": "lerna run lint:fix --stream --scope",
+    "lint:fix:all": "lerna run lint:fix --stream",
+    "publish:all": "lerna publish",
+    "publish:list": "list-module-files --pkg",
+    "publish:one": "lerna publish --skip-git --force-publish=* --access=public --scope",
+    "start:watch": "lerna run start:watch --stream --scope",
+    "test": "yarn test:all",
+    "test:all": "lerna run test --stream --concurrency 1",
+    "test:one": "lerna run test --stream --scope",
+    "test:watch": "lerna run test:watch --stream --scope"
+  },
   "version": "0.0.1",
   "description": "All private @jneander projects in one place",
   "main": "index.js",
@@ -13,5 +40,12 @@
   },
   "author": "Jeremy Neander <jeremy.neander@gmail.com>",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "lerna": "2.9.0",
+    "npm-run-all": "^4.1.2"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }
