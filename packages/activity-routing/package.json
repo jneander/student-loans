@@ -1,0 +1,13 @@
+{
+  "name": "@jneander/activity-routing",
+  "version": "0.0.1",
+  "description": "Routing by domain concepts instead of URLs",
+  "main": "index.js",
+  "author": "Jeremy Neander <jeremy.neander@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "qs": "^6.4.0",
+    "url-pattern": "^1.0.3"
+  }
+}

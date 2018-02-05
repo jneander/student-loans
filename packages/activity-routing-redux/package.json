@@ -1,0 +1,12 @@
+{
+  "name": "@jneander/activity-routing-redux",
+  "version": "0.0.1",
+  "description": "Activity Routing with Redux",
+  "main": "index.js",
+  "author": "Jeremy Neander <jeremy.neander@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "history": "^4.6.1"
+  }
+}

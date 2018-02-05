@@ -1,0 +1,13 @@
+{
+  "name": "@jneander/activity-routing-history",
+  "version": "0.0.1",
+  "description": "Activity Routing Browser History Adapter",
+  "main": "index.js",
+  "author": "Jeremy Neander <jeremy.neander@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "history": "^4.7.2",
+    "qs": "^6.5.1"
+  }
+}
