@@ -1,0 +1,3 @@
+# Spec Directories
+**/*.spec.js
+**/__specs__
