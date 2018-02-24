@@ -1,0 +1,37 @@
+{
+  "name": "@jneander/activity-routing-react",
+  "version": "0.0.1",
+  "description": "Activity Routing with React",
+  "main": "./lib/index.js",
+  "module": "./es/index.js",
+  "scripts": {
+    "build": "build-lib",
+    "build:production": "build-lib",
+    "clean": "clean",
+    "lint": "lint-code",
+    "lint:fix": "lint-code --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jneander/jneander"
+  },
+  "keywords": [
+    "react",
+    "routing"
+  ],
+  "author": "Jeremy Neander <jeremy.neander@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jneander/jneander/issues"
+  },
+  "homepage": "https://github.com/jneander/jneander",
+  "devDependencies": {
+    "@jneander/dev-tools": "^0.0.3",
+    "prop-types": "^15.6.0"
+  },
+  "peerDependencies": {
+    "@jneander/activity-routing": "^0.0.1",
+    "react": "^15.6.2",
+    "react-dom": "^15.6.2"
+  }
+}
