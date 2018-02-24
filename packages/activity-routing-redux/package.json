@@ -1,0 +1,34 @@
+{
+  "name": "@jneander/activity-routing-redux",
+  "version": "0.0.1",
+  "description": "Activity Routing with Redux",
+  "main": "./lib/index.js",
+  "module": "./es/index.js",
+  "scripts": {
+    "build": "build-lib",
+    "build:production": "build-lib",
+    "clean": "clean",
+    "lint": "lint-code",
+    "lint:fix": "lint-code --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jneander/jneander"
+  },
+  "keywords": [
+    "redux",
+    "routing"
+  ],
+  "author": "Jeremy Neander <jeremy.neander@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jneander/jneander/issues"
+  },
+  "homepage": "https://github.com/jneander/jneander",
+  "dependencies": {
+    "history": "^4.6.1"
+  },
+  "devDependencies": {
+    "@jneander/dev-tools": "^0.0.3"
+  }
+}
