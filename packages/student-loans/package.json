@@ -35,9 +35,13 @@
   "dependencies": {
     "@instructure/ui-core": "^4.7.2",
     "@instructure/ui-themes": "^4.7.2",
+    "firebase": "^4.0.0",
     "normalize.css": "^8.0.0",
     "prop-types": "^15.5.9",
     "react": "^15.6.2",
-    "react-dom": "^15.6.2"
+    "react-dom": "^15.6.2",
+    "react-redux": "^5.0.4",
+    "redux": "^3.6.0",
+    "redux-thunk": "^2.2.0"
   }
 }
