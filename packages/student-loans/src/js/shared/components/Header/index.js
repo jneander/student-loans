@@ -4,10 +4,11 @@ import Button from '@instructure/ui-core/lib/components/Button'
 import Container from '@instructure/ui-core/lib/components/Container'
 import Grid, {GridCol, GridRow} from '@instructure/ui-core/lib/components/Grid'
 import Heading from '@instructure/ui-core/lib/components/Heading'
-import Link from '@instructure/ui-core/lib/components/Link'
 
+import {urls} from '../../../app/router'
 import {getAuthState, SIGNED_IN, SIGNING_IN} from '../../auth/AuthAccessor'
 import {signIn, signOut} from '../../auth/AuthActions'
+import ActivityLink from '../ActivityLink'
 import styles from './styles.css'
 
 class Header extends PureComponent {
@@ -18,9 +19,19 @@ class Header extends PureComponent {
           <GridRow>
             <GridCol>
               <Heading level="h1">
-                <Link href="#">Student Loans</Link>
+                <ActivityLink as="link" href={urls.listLoansUrl()}>
+                  Student Loans
+                </ActivityLink>
               </Heading>
             </GridCol>
+
+            {this.props.authState === SIGNED_IN && (
+              <GridCol width="auto">
+                <ActivityLink as="link" href={urls.showSettingsUrl()} margin="0 medium 0 0">
+                  Settings
+                </ActivityLink>
+              </GridCol>
+            )}
 
             <GridCol width="auto">
               {this.props.authState === SIGNED_IN ? (
