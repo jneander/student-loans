@@ -1,0 +1,32 @@
+:root {
+  /* Spacing */
+  --spacing-small: 0.25rem;
+  --spacing-medium: 1rem;
+
+  /* Color */
+  --background: #eeeeee;
+  --white: #ffffff;
+}
+
+body {
+  background: var(--background);
+  margin: 0;
+  min-height: 100vh;
+}
+
+:global(#app) {
+  height: 100vh;
+  min-height: 100vh;
+}
+
+.Layout__Container {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
+.Layout__Main {
+  flex-basis: auto;
+  flex-grow: 1;
+  flex-shrink: 1;
+}
