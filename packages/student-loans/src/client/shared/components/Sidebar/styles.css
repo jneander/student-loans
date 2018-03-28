@@ -1,0 +1,31 @@
+.Sidebar {
+  background: var(--backgroundColor);
+  display: flex;
+  flex-basis: 8rem;
+  flex-direction: column;
+  flex-grow: 0;
+  flex-shrink: 0;
+  justify-content: space-between;
+  max-width: 8rem;
+}
+
+.Sidebar__Header {
+  flex-basis: auto;
+  flex-grow: 0;
+  flex-shrink: 0;
+  margin: 0.875em;
+}
+
+.Sidebar__Nav {
+  flex-grow: 1;
+}
+
+.Sidebar__Footer {
+  flex-basis: auto;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+.Logo {
+  font-size: 2rem;
+}
