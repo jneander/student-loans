@@ -3,6 +3,7 @@ import createReactContext from 'create-react-context'
 
 import Store from '../../Store'
 import Auth from './Auth'
+import Projects from './Projects'
 import Routing from './Routing'
 
 const {Consumer, Provider} = createReactContext()
@@ -15,6 +16,7 @@ export default class StateProvider extends Component {
 
     this.accessors = {
       auth: new Auth(this.store),
+      projects: new Projects(this.store),
       routing: new Routing(this.store)
     }
 
@@ -25,11 +27,13 @@ export default class StateProvider extends Component {
 
   componentDidMount() {
     this.accessors.auth.initialize()
+    this.accessors.projects.initialize()
     this.accessors.routing.initialize()
   }
 
   componentWillUnmount() {
     this.accessors.auth.uninitialize()
+    this.accessors.projects.uninitialize()
     this.accessors.routing.uninitialize()
   }
 

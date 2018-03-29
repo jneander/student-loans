@@ -7,6 +7,8 @@ import Activity from './shared/components/Activity'
 import AuthConsumer from './shared/state/AuthConsumer'
 import StateProvider from './shared/state/StateProvider'
 import Layout from './shared/components/Layout'
+import ListProjects from './ListProjects'
+import ShowProject from './ShowProject'
 
 export default class Client extends Component {
   render() {
@@ -32,6 +34,12 @@ export default class Client extends Component {
 
                     <Activity name="listProjects">
                       <Heading level="h1">Projects</Heading>
+
+                      <ListProjects />
+                    </Activity>
+
+                    <Activity name="showProject">
+                      <ShowProject />
                     </Activity>
 
                     <Activity name="showSettings">
