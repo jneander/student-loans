@@ -1,8 +1,10 @@
 import React, {Component} from 'react'
 import Container from '@instructure/ui-core/lib/components/Container'
+import Button from '@instructure/ui-core/lib/components/Button'
 import Heading from '@instructure/ui-core/lib/components/Heading'
 
 import Activity from './shared/components/Activity'
+import AuthConsumer from './shared/state/AuthConsumer'
 import StateProvider from './shared/state/StateProvider'
 import Layout from './shared/components/Layout'
 
@@ -11,15 +13,43 @@ export default class Client extends Component {
     return (
       <StateProvider>
         <Layout>
-          <Container as="div" padding="small">
-            <Activity name="home">
-              <Heading level="h1">Home</Heading>
-            </Activity>
+          <AuthConsumer>
+            {auth => {
+              if (auth.isSigningIn()) {
+                return (
+                  <Container as="div" padding="small">
+                    <span>Authorizing</span>
+                  </Container>
+                )
+              }
 
-            <Activity name="listProjects">
-              <Heading level="h1">Projects</Heading>
-            </Activity>
-          </Container>
+              if (auth.isSignedIn()) {
+                return (
+                  <Container as="div" padding="small">
+                    <Activity name="home">
+                      <Heading level="h1">Home</Heading>
+                    </Activity>
+
+                    <Activity name="listProjects">
+                      <Heading level="h1">List Projects</Heading>
+                    </Activity>
+
+                    <Activity name="showSettings">
+                      <Heading level="h1">Show Settings</Heading>
+                    </Activity>
+                  </Container>
+                )
+              }
+
+              return (
+                <Container as="div" padding="small">
+                  <Button onClick={auth.signIn} variant="primary">
+                    Sign in with Google
+                  </Button>
+                </Container>
+              )
+            }}
+          </AuthConsumer>
         </Layout>
       </StateProvider>
     )

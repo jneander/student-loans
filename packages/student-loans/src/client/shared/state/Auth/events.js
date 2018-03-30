@@ -1,0 +1,7 @@
+export const SIGN_IN_CANCELED = Symbol('SIGN_IN_CANCELED')
+export const SIGN_IN_FAILURE = Symbol('SIGN_IN_FAILURE')
+export const SIGN_IN_STARTED = Symbol('SIGN_IN_STARTED')
+export const SIGN_IN_SUCCESS = Symbol('SIGN_IN_SUCCESS')
+export const SIGN_OUT_FAILURE = Symbol('SIGN_OUT_FAILURE')
+export const SIGN_OUT_STARTED = Symbol('SIGN_OUT_STARTED')
+export const SIGN_OUT_SUCCESS = Symbol('SIGN_OUT_SUCCESS')

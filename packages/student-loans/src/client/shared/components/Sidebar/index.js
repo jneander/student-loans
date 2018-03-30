@@ -1,10 +1,12 @@
 import React, {Component} from 'react'
+import Button from '@instructure/ui-core/lib/components/Button'
 import Container from '@instructure/ui-core/lib/components/Container'
 import List, {ListItem} from '@instructure/ui-core/lib/components/List'
 import themeable from '@instructure/ui-themeable'
 
-import ActivityLink from '../ActivityLink'
 import router from '../../../router'
+import AuthConsumer from '../../state/AuthConsumer'
+import ActivityLink from '../ActivityLink'
 import styles from './styles.css'
 import theme from './theme'
 
@@ -28,7 +30,19 @@ class Sidebar extends Component {
           </List>
         </nav>
 
-        <footer className={styles.Sidebar__Footer} />
+        <footer className={styles.Sidebar__Footer}>
+          <AuthConsumer>
+            {auth =>
+              auth.isSignedIn() ? (
+                <Container as="div" padding="small">
+                  <Button fluidWidth onClick={auth.signOut} variant="light">
+                    Sign Out
+                  </Button>
+                </Container>
+              ) : null
+            }
+          </AuthConsumer>
+        </footer>
       </Container>
     )
   }
