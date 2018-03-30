@@ -5,7 +5,6 @@
   },
   "version": "0.0.1",
   "description": "A Writing Platform",
-
   "scripts": {
     "build": "NODE_ENV=development build-app --config ./config/app.js",
     "build:production": "NODE_ENV=production build-app --config ./config/app.js",
@@ -32,6 +31,7 @@
     "@instructure/ui-core": "^4.7.3",
     "@instructure/ui-themes": "^4.7.3",
     "create-react-context": "^0.2.1",
+    "history": "^4.7.2",
     "normalize.css": "^8.0.0",
     "react": "^15.6.2",
     "react-dom": "^15.6.2"

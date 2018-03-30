@@ -17,6 +17,14 @@ export default class StateProvider extends PureComponent {
     }
   }
 
+  componentWillMount() {
+    this.state.routing.initialize()
+  }
+
+  componentWillUnmount() {
+    this.state.routing.uninitialize()
+  }
+
   render() {
     return <Provider value={this.state}>{this.props.children}</Provider>
   }
