@@ -1,26 +1,33 @@
 import History from '../../../shared/wrappers/History'
 
+import router from '../../router'
+
 export default class Routing {
-  constructor(router, state, onUpdate) {
+  constructor(store) {
+    this._store = store
     this._history = new History()
 
     const {path, query} = this._history.getCurrentLocation()
 
-    this._state = {
-      activity: router.match(path, query),
-      ...state
-    }
+    this._store.setState({
+      routing: {
+        activity: router.match(path, query),
+      }
+    })
 
-    this._router = router
+    this._get = () => this._store.getState().routing
 
     this._update = state => {
-      onUpdate(new Routing(router, {...this._state, ...state}, onUpdate))
+      const {routing} = this._store.getState()
+      this._store.setState({
+        routing: {...routing, ...state}
+      })
     }
   }
 
   initialize() {
     this._history.listen(({path, query}) => {
-      const activity = this._router.match(path, query)
+      const activity = router.match(path, query)
       this._update({activity})
     })
   }
@@ -30,7 +37,7 @@ export default class Routing {
   }
 
   getActivity() {
-    return this._state.activity
+    return this._get().activity
   }
 
   pushLocation(location) {

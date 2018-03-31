@@ -11,15 +11,23 @@ import {
 } from './events'
 
 export default class Auth {
-  constructor(state = {}, onUpdate) {
-    this._state = {
-      authStatus: null,
-      initialized: false,
-      ...state
-    }
+  constructor(store) {
+    this._store = store
+
+    this._store.setState({
+      auth: {
+        authStatus: null,
+        initialized: false
+      }
+    })
+
+    this._get = () => this._store.getState().auth
 
     this._update = state => {
-      onUpdate(new Auth({...this._state, ...state}, onUpdate))
+      const {auth} = this._store.getState()
+      this._store.setState({
+        auth: {...auth, ...state}
+      })
     }
 
     this.signIn = this.signIn.bind(this)
@@ -27,23 +35,23 @@ export default class Auth {
   }
 
   get authStatus() {
-    return this._state.authStatus
+    return this._get().authStatus
   }
 
   isInitialized() {
-    return this._state.initialized
+    return this._get().initialized
   }
 
   isAuthenticating() {
-    return this._state.authStatus === SIGN_IN_STARTED
+    return this._get().authStatus === SIGN_IN_STARTED
   }
 
   isSignedIn() {
-    return this._state.authStatus === SIGN_IN_SUCCESS
+    return this._get().authStatus === SIGN_IN_SUCCESS
   }
 
   isSigningIn() {
-    return this._state.authStatus === SIGN_IN_STARTED
+    return this._get().authStatus === SIGN_IN_STARTED
   }
 
   initialize() {

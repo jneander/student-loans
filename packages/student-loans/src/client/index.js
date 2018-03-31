@@ -31,11 +31,11 @@ export default class Client extends Component {
                     </Activity>
 
                     <Activity name="listProjects">
-                      <Heading level="h1">List Projects</Heading>
+                      <Heading level="h1">Projects</Heading>
                     </Activity>
 
                     <Activity name="showSettings">
-                      <Heading level="h1">Show Settings</Heading>
+                      <Heading level="h1">Settings</Heading>
                     </Activity>
                   </Container>
                 )

@@ -1,45 +1,59 @@
-import React, {PureComponent} from 'react'
+import React, {Component} from 'react'
 import createReactContext from 'create-react-context'
 
-import router from '../../router'
+import Store from '../../Store'
 import Auth from './Auth'
 import Routing from './Routing'
 
 const {Consumer, Provider} = createReactContext()
 
-export default class StateProvider extends PureComponent {
+export default class StateProvider extends Component {
   constructor(props) {
     super(props)
 
-    this.state = {
-      auth: new Auth(null, auth => {
-        this.setState({auth})
-      }),
-      routing: new Routing(router, {}, routing => {
-        this.setState({routing})
-      })
+    this.store = new Store()
+
+    this.accessors = {
+      auth: new Auth(this.store),
+      routing: new Routing(this.store)
     }
+
+    this.store.subscribe(() => {
+      this.setState({})
+    })
   }
 
-  componentWillMount() {
-    this.state.auth.initialize()
-    this.state.routing.initialize()
+  componentDidMount() {
+    this.accessors.auth.initialize()
+    this.accessors.routing.initialize()
   }
 
   componentWillUnmount() {
-    this.state.auth.uninitialize()
-    this.state.routing.uninitialize()
+    this.accessors.auth.uninitialize()
+    this.accessors.routing.uninitialize()
   }
 
   render() {
-    return <Provider value={this.state}>{this.props.children}</Provider>
+    return <Provider value={{...this.accessors}}>{this.props.children}</Provider>
   }
 }
 
 export function createConsumer(mapStateToProps) {
-  return class StateConsumer extends PureComponent {
+  return class StateConsumer extends Component {
     render() {
-      return <Consumer>{state => this.props.children(mapStateToProps(state))}</Consumer>
+      return <Consumer>{accessors => this.props.children(mapStateToProps(accessors))}</Consumer>
+    }
+  }
+}
+
+export function connectConsumer(ConsumingComponent, mapStateToProps) {
+  return class StateConsumer extends Component {
+    render() {
+      return (
+        <Consumer>
+          {accessors => <ConsumingComponent {...mapStateToProps(accessors)} />}
+        </Consumer>
+      )
     }
   }
 }
