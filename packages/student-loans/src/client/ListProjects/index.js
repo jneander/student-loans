@@ -6,6 +6,13 @@ import {connectConsumer} from '../shared/state/StateProvider'
 import ProjectList from './ProjectList'
 
 class ListProjects extends Component {
+  componentDidMount() {
+    const {projectsAreLoaded, projectsAreLoading} = this.props
+    if (!(projectsAreLoaded || projectsAreLoading)) {
+      this.props.loadProjects()
+    }
+  }
+
   render() {
     const createProject = () => {
       this.props.createProject({name: 'My Project'})
@@ -13,10 +20,11 @@ class ListProjects extends Component {
 
     return (
       <Container as="div">
-        <Button onClick={createProject}>Create Project</Button>
-        <Button onClick={this.props.loadProjects}>Get Projects</Button>
+        <Button margin="small 0 0 0" onClick={createProject} variant="primary">
+          Add Project
+        </Button>
 
-        <ProjectList projects={this.props.projects} />
+        <ProjectList margin="small 0 0 0" projects={this.props.projects} />
       </Container>
     )
   }
@@ -28,6 +36,8 @@ export default connectConsumer(ListProjects, ({projects}) => {
       projects.createProject(attr)
     },
     loadProjects: projects.loadProjects,
-    projects: projects.getProjectList()
+    projects: projects.getProjectList(),
+    projectsAreLoaded: projects.areProjectsLoaded(),
+    projectsAreLoading: projects.areProjectsLoading()
   }
 })

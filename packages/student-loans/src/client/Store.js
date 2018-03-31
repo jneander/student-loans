@@ -3,8 +3,24 @@ export default class Store {
     this._listeners = []
     this._state = {}
 
-    this.inTransaction = false
-    this.isBroadcasting = false
+    this._inTransaction = false
+    this._isBroadcasting = false
+  }
+
+  get inTransaction() {
+    return this._inTransaction
+  }
+
+  set inTransaction(state) {
+    this._inTransaction = state
+  }
+
+  get isBroadcasting() {
+    return this._isBroadcasting
+  }
+
+  set isBroadcasting(state) {
+    this._isBroadcasting = state
   }
 
   getState() {

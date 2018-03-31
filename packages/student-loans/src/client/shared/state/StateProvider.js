@@ -55,7 +55,7 @@ export function connectConsumer(ConsumingComponent, mapStateToProps) {
     render() {
       return (
         <Consumer>
-          {accessors => <ConsumingComponent {...mapStateToProps(accessors)} />}
+          {accessors => <ConsumingComponent {...this.props} {...mapStateToProps(accessors)} />}
         </Consumer>
       )
     }

@@ -11,7 +11,7 @@ export default class Routing {
 
     this._store.setState({
       routing: {
-        activity: router.match(path, query),
+        activity: router.match(path, query)
       }
     })
 
