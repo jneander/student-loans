@@ -2,8 +2,8 @@ import React, {Component} from 'react'
 import Button from '@instructure/ui-core/lib/components/Button'
 import Container from '@instructure/ui-core/lib/components/Container'
 
-import ProjectList from '../shared/projects/components/ProjectList'
 import {connectConsumer} from '../shared/state/StateProvider'
+import ProjectList from './ProjectList'
 
 class ListProjects extends Component {
   render() {
