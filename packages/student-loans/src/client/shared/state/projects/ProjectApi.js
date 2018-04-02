@@ -17,6 +17,10 @@ export function createProject(attr) {
   return createFile({...attr, mimeType: MIME_TYPE}).then(response => response.result)
 }
 
+export function updateProject(projectId, attr) {
+  return updateFile(projectId, attr).then(response => response.result)
+}
+
 export function deleteProject(projectId) {
   return deleteFile(projectId).then(response => true)
 }

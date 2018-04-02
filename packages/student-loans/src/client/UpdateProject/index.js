@@ -8,54 +8,45 @@ import TextInput from '@instructure/ui-core/lib/components/TextInput'
 
 import router from '../router'
 import ActionBar from '../shared/components/ActionBar'
+import ProjectForm from '../shared/components/ProjectForm'
 import {connectConsumer} from '../shared/state/StateProvider'
 
-class ShowProject extends Component {
+class UpdateProject extends Component {
   componentDidMount() {
     const {projectsAreLoaded, projectsAreLoading} = this.props
     if (!(projectsAreLoaded || projectsAreLoading)) {
       this.props.loadProjects()
-    } else if (projectsAreLoaded) {
-      this.nameInput.focus()
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    if (!prevProps.projectsAreLoaded && this.props.projectsAreLoaded) {
-      this.nameInput.focus()
     }
   }
 
   render() {
+    if (this.props.projectsAreLoading || !this.props.projectsAreLoaded) {
+      return <Spinner title="Loading Projects" />
+    }
+
     if (this.props.project) {
       const showProjectUrl = router.urls.showProjectUrl(this.props.project.id)
+      const updateProject = () => {
+        this.props.updateProject(this.form.formData)
+      }
 
       return (
         <Container as="div">
           <Heading level="h1">{this.props.project.name}</Heading>
 
           <Container as="div" margin="small 0">
-            <FormFieldGroup colSpacing="medium" description="Project" layout="columns" vAlign="top">
-              <TextInput
-                defaultValue={this.props.project.name}
-                label="Name"
-                ref={ref => {
-                  this.nameInput = ref
-                }}
-              />
-            </FormFieldGroup>
+            <ProjectForm ref={ref => {this.form = ref}} project={this.props.project} />
           </Container>
 
           <ActionBar
-            actions={[{href: showProjectUrl, label: 'Cancel', onClick: this.props.showProject}]}
+            actions={[
+              {label: 'Update', onClick: updateProject, variant: 'primary'},
+              {href: showProjectUrl, label: 'Cancel', onClick: this.props.showProject}
+            ]}
             margin="small 0 0 0"
           />
         </Container>
       )
-    }
-
-    if (this.props.projectsAreLoading || !this.props.projectsAreLoaded) {
-      return <Spinner title="Loading Projects" />
     }
 
     return (
@@ -66,7 +57,7 @@ class ShowProject extends Component {
   }
 }
 
-export default connectConsumer(ShowProject, ({projects, routing}) => {
+export default connectConsumer(UpdateProject, ({projects, routing}) => {
   const {projectId} = routing.getActivity()
   const project = projects.getProject(projectId)
 
@@ -74,6 +65,9 @@ export default connectConsumer(ShowProject, ({projects, routing}) => {
     loadProjects: projects.loadProjects,
     project,
     projectsAreLoaded: projects.areProjectsLoaded(),
-    projectsAreLoading: projects.areProjectsLoading()
+    projectsAreLoading: projects.areProjectsLoading(),
+    updateProject(attr) {
+      projects.updateProject(projectId, attr)
+    }
   }
 })

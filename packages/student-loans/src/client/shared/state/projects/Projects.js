@@ -1,4 +1,4 @@
-import {createProject, deleteProject, getProjectList} from './ProjectApi'
+import {createProject, deleteProject, getProjectList, updateProject} from './ProjectApi'
 
 export const LOAD_PROJECTS_FAILURE = Symbol('LOAD_PROJECTS_FAILURE')
 export const LOAD_PROJECTS_STARTED = Symbol('LOAD_PROJECTS_STARTED')
@@ -64,6 +64,17 @@ export default class Projects {
     setTimeout(() => {
       createProject(attr || {}).then(project => {
         const projects = [...this._get().projects, project]
+        this._update({projects})
+      })
+    })
+  }
+
+  updateProject(projectId, attr) {
+    setTimeout(() => {
+      updateProject(projectId, attr).then(project => {
+        const projects = [...this._get().projects]
+        const index = projects.findIndex(project => project.id === projectId)
+        projects.splice(index, 1, project)
         this._update({projects})
       })
     })

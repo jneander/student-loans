@@ -7,6 +7,7 @@ import Activity from './shared/components/Activity'
 import AuthConsumer from './shared/state/AuthConsumer'
 import StateProvider from './shared/state/StateProvider'
 import Layout from './shared/components/Layout'
+import CreateProject from './CreateProject'
 import ListProjects from './ListProjects'
 import ShowProject from './ShowProject'
 import UpdateProject from './UpdateProject'
@@ -41,6 +42,10 @@ export default class Client extends Component {
 
                     <Activity name="showProject">
                       <ShowProject />
+                    </Activity>
+
+                    <Activity name="createProject">
+                      <CreateProject />
                     </Activity>
 
                     <Activity name="updateProject">
