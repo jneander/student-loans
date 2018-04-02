@@ -29,13 +29,20 @@
   },
   "homepage": "https://github.com/jneander/jlnio#readme",
   "dependencies": {
+    "@instructure/ui-buttons": "^5.0.0",
+    "@instructure/ui-container": "^5.0.0",
     "@instructure/ui-elements": "^5.0.0",
+    "@instructure/ui-layout": "^5.0.0",
     "@instructure/ui-themes": "^5.0.0",
     "create-react-context": "^0.2.1",
+    "firebase": "^4.0.0",
     "normalize.css": "^8.0.0",
     "prop-types": "^15.5.9",
     "react": "^15.6.2",
-    "react-dom": "^15.6.2"
+    "react-dom": "^15.6.2",
+    "react-redux": "^5.0.4",
+    "redux": "^3.6.0",
+    "redux-thunk": "^2.2.0"
   },
   "devDependencies": {
     "@jneander/dev-tools": "^0.0.5"
