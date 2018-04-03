@@ -1,13 +1,14 @@
 import React, {PureComponent} from 'react'
 import {connect} from 'react-redux'
-import Button from '@instructure/ui-buttons/lib/components/Button'
-import Container from '@instructure/ui-container/lib/components/Container'
-import Grid, {GridCol, GridRow} from '@instructure/ui-layout/lib/components/Grid'
-import Heading from '@instructure/ui-elements/lib/components/Heading'
-import Link from '@instructure/ui-elements/lib/components/Link'
+import Button from '@instructure/ui-core/lib/components/Button'
+import Container from '@instructure/ui-core/lib/components/Container'
+import Grid, {GridCol, GridRow} from '@instructure/ui-core/lib/components/Grid'
+import Heading from '@instructure/ui-core/lib/components/Heading'
 
+import {urls} from '../../../router'
 import {getAuthState, SIGNED_IN, SIGNING_IN} from '../../auth/AuthAccessor'
 import {signIn, signOut} from '../../auth/AuthActions'
+import ActivityLink from '../../../../shared/components/ActivityLink'
 import styles from './styles.css'
 
 class Header extends PureComponent {
@@ -18,9 +19,19 @@ class Header extends PureComponent {
           <GridRow>
             <GridCol>
               <Heading level="h1">
-                <Link href="#">Student Loans</Link>
+                <ActivityLink as="link" href={urls.listLoansUrl()}>
+                  Student Loans
+                </ActivityLink>
               </Heading>
             </GridCol>
+
+            {this.props.authState === SIGNED_IN && (
+              <GridCol width="auto">
+                <ActivityLink as="link" href={urls.showSettingsUrl()} margin="0 medium 0 0">
+                  Settings
+                </ActivityLink>
+              </GridCol>
+            )}
 
             <GridCol width="auto">
               {this.props.authState === SIGNED_IN ? (

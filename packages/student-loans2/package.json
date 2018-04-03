@@ -5,6 +5,7 @@
   },
   "version": "0.0.1",
   "description": "A tool for tracking and optimizing your student loans",
+  "main": "index.js",
   "scripts": {
     "build": "NODE_ENV=development build-app --config ./config/app.js",
     "build:production": "NODE_ENV=production build-app --config ./config/app.js",
@@ -22,19 +23,20 @@
     "type": "git",
     "url": "https://github.com/jneander/jlnio"
   },
-  "author": "Jeremy Neander <jeremy.neander@gmail.com>",
+  "author": "Jeremy Neander",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/jneander/jlnio/issues"
   },
   "homepage": "https://github.com/jneander/jlnio#readme",
+  "devDependencies": {
+    "@jneander/dev-tools": "^0.0.5"
+  },
   "dependencies": {
-    "@instructure/ui-buttons": "^5.0.0",
-    "@instructure/ui-container": "^5.0.0",
-    "@instructure/ui-elements": "^5.0.0",
-    "@instructure/ui-layout": "^5.0.0",
-    "@instructure/ui-themes": "^5.0.0",
-    "create-react-context": "^0.2.1",
+    "@instructure/ui-core": "^4.7.2",
+    "@instructure/ui-themes": "^4.7.2",
+    "@jneander/activity-routing": "^0.0.1",
+    "@jneander/activity-routing-history": "^0.0.1",
     "firebase": "^4.0.0",
     "normalize.css": "^8.0.0",
     "prop-types": "^15.5.9",
@@ -43,9 +45,5 @@
     "react-redux": "^5.0.4",
     "redux": "^3.6.0",
     "redux-thunk": "^2.2.0"
-  },
-  "devDependencies": {
-    "@jneander/dev-tools": "^0.0.5"
-  },
-  "private": true
+  }
 }
